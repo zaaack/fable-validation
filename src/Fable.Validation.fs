@@ -134,6 +134,7 @@ let inline raceAsync<'T, 'TError, 'L when 'L : comparison> = baseValidateAsync<'
 //     let type' = typedefof<'T>
 //     FSharp.Reflection.FSharpValue.MakeRecord()
 
+
 let baseValidateSync<'T, 'TError, 'L when 'L : comparison>
     raceField (rules: ('L * ValidatorInfo<obj, 'TError>) list): Result<Map<'L,'E>, Map<'L, 'TError list>> = 
             let mutable msgMap = Map<'L, 'TError list> Seq.empty
