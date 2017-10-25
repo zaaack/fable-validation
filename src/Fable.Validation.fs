@@ -98,33 +98,32 @@ let inline ifInvalidAsync<'T, 'TError> (test: 'T -> Async<Result<'T option, 'TEr
     ifInvalid<'T, 'TError> (AsyncTest test)
 
 let baseValidateAsync<'T, 'TError, 'L when 'L : comparison>
-    raceField
-    (rules: 'T -> ('L * ValidatorInfo<obj, 'TError>) list)
-    input =
+    raceField (rules: ('L * ValidatorInfo<obj, 'TError>) list): Async<Result<Map<'L,'E>, Map<'L, 'TError list>>> =
         async {
             let mutable msgMap = Map<'L, 'TError list> Seq.empty
+            let mutable dataMap = Map<'L, 'E> Seq.empty
+            let mutable tail = rules
+            let mutable isBreak = false
             let consumeResult key result =
                 match result with
-                | Ok _ -> ()
+                | Ok input -> dataMap <- Map.add key input dataMap
                 | Error errors ->
                     msgMap <- Map.add key errors msgMap
-            let mutable tail = rules input
-            let mutable isBreak = false
             while not isBreak && List.isEmpty tail |> not do
                 let (key, info) = tail.Head
                 tail <- tail.Tail
                 match info with
                 | Validator (_, _, result) ->
-                    result |> consumeResult key
+                    consumeResult key result
                 | AsyncValidator (_, _, result) ->
                     let! result = result
                     consumeResult key result
-                | Input input' -> failwithf "Validation rules must be a function, but found input: %A" input'
+                | Input input -> failwithf "Validation rules must be a function, but found input: %A" input
                 if raceField && Map.isEmpty msgMap |> not then
                     isBreak <- true
 
             return
-                if Map.isEmpty msgMap then Ok input
+                if Map.isEmpty msgMap then Ok dataMap
                 else Error msgMap
         }
 
@@ -136,11 +135,10 @@ let inline raceAsync<'T, 'TError, 'L when 'L : comparison> = baseValidateAsync<'
 //     FSharp.Reflection.FSharpValue.MakeRecord()
 
 let baseValidateSync<'T, 'TError, 'L when 'L : comparison>
-    raceField
-    (rules: 'T -> ('L * ValidatorInfo<obj, 'TError>) list)
-    input = 
+    raceField (rules: ('L * ValidatorInfo<obj, 'TError>) list): Result<Map<'L,'E>, Map<'L, 'TError list>> = 
             let mutable msgMap = Map<'L, 'TError list> Seq.empty
-            let mutable tail = rules input
+            let mutable dataMap = Map<'L, 'E> Seq.empty
+            let mutable tail = rules
             let mutable isBreak = false
             while not isBreak && List.isEmpty tail |> not do
                 let (key, info) = tail.Head
@@ -148,16 +146,17 @@ let baseValidateSync<'T, 'TError, 'L when 'L : comparison>
                 match info with
                 | Validator (_, _, result) ->
                     match result with
-                    | Ok _ -> ()
+                    | Ok input -> dataMap <- Map.add key input dataMap
                     | Error errors ->
                         (msgMap <- Map.add key errors msgMap)
-                | AsyncValidator (_, input', vali) ->
-                    failwithf "Sync validation cannot contain async rules: %A, whole input: %A" (input', vali) input
-                | Input input' -> failwithf "Validation rules must be a function, but found input: %A, whole input: %A" input' input
+                | AsyncValidator (_, input, vali) ->
+                    failwithf "Sync validation cannot contain async rules: %A, whole input: %A" (input, vali) input
+                | Input input -> failwithf "Validation rules must be a function, but found input: %A, whole input: %A" input input
                 if raceField && Map.isEmpty msgMap |> not then
                     isBreak <- true
-            if Map.isEmpty msgMap then Ok input
+            if Map.isEmpty msgMap then Ok dataMap
             else Error msgMap
+
 
 let inline all<'T, 'TError, 'L when 'L : comparison> = baseValidateSync<'T, 'TError, 'L> false
 let inline race<'T, 'TError, 'L when 'L : comparison> = baseValidateSync<'T, 'TError, 'L> true
