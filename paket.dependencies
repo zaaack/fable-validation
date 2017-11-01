@@ -4,7 +4,7 @@ storage:none
 
 nuget FSharp.Core redirects:force
 nuget Fable.Core
-nuget Fable.Import.Mocha
+nuget Fable.Import.Jest 
 clitool dotnet-fable
 
 group Build

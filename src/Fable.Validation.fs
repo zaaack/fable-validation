@@ -3,245 +3,187 @@ module Fable.Validation.Core
 open System
 open System.Text.RegularExpressions
 
-type ValidatorFlags = {
-    race: bool
-    skip: bool
-}
-type ValidatorInfo<'T, 'TError> =
-    | Input of (ValidatorFlags * 'T)
-    | Validator of (ValidatorFlags * 'T* Result<'T, 'TError list>)
-    | AsyncValidator of (ValidatorFlags * 'T * Async<Result<'T, 'TError list>>)
+let private singleKey = "s"
 
-type ValidationTester<'T, 'TError> =
-    | Test of ('T -> 'T option)
-    | AsyncTest of ('T -> Async<Result<'T option, 'TError>>)
-
-let inline internal castAny<'a, 'b> (a: 'a) = (a :> obj) :?> 'b
-
-let getInfoFlagsAndInput info =
-    match info with
-    | Input (race, input) -> (race, input)
-    | Validator (race, input, _) -> (race, input)
-    | AsyncValidator (race, input, _) -> (race, input)
-
-
-let ifInvalid<'T, 'TError> (test: ValidationTester<'T, 'TError>) (error: 'TError) (info: ValidatorInfo<'T, 'TError>): ValidatorInfo<'T, 'TError> =
-    let (flags, input) =  getInfoFlagsAndInput info
-    let {race = race; skip = skip} = flags
-    if skip then info
-    else
-        let inline mkResult input errors =
-            if List.isEmpty errors then Ok input
-            else Error errors
-        let inline mkResultWithLast lastResult input errors =
-            match lastResult with
-            | Ok input -> mkResult input errors
-            | Error errors' -> mkResult input (errors @ errors')
-
-
-        let inline asyncValidate () =
-            async {
-                let mutable newInput = input
-                let mutable testErrors = []
-                match test with
-                | Test test ->
-                    match test input with
-                    | None -> testErrors <- error::testErrors
-                    | Some input' -> newInput <- input'
-                | AsyncTest test ->
-                    let! result' = test input
-                    match result' with
-                    | Ok None -> testErrors <- error::testErrors
-                    | Ok(Some input') -> newInput <- input'
-                    | Error error' -> testErrors <- error'::testErrors
-
-                if race && List.isEmpty testErrors |> not then
-                    return mkResult newInput testErrors
-                else
-                    let mutable result = Ok newInput
-                    match info with
-                    | Input (race, input') ->
-                        failwithf "this should never happen for asyncValidator race:%A input:%A" race input'
-                    | Validator (_, input, result') ->
-                        result <- mkResultWithLast result' input testErrors
-                    | AsyncValidator (_, input, result') ->
-                        let! asyncInfoResult = result'
-                        result <- mkResultWithLast asyncInfoResult input testErrors
-                    return result
-            }
-
-        let mutable newInput = input
-        match test, info with
-        | AsyncTest _, _ | _, AsyncValidator _ ->
-            AsyncValidator (flags, input, asyncValidate ())
-        | Test test, Input (_, input) ->
-            let testErrors = 
-                match test input with
-                | Some input -> newInput <- input; []
-                | None -> [error]
-            Validator (flags, newInput, (mkResult input testErrors))
-        | Test test, Validator (_, input, result) ->
-            let testErrors = 
-                match test input with
-                | Some input -> newInput <- input; []
-                | None -> [error]
-            let result =
-                if race && List.isEmpty testErrors |> not then mkResult input testErrors
-                else mkResultWithLast result input testErrors
-            Validator (flags, input, result)
-
-let inline ifInvalidSync<'T, 'TError> (test: 'T -> 'T option) =
-    ifInvalid<'T, 'TError> (Test test)
-
-
-let inline ifInvalidAsync<'T, 'TError> (test: 'T -> Async<Result<'T option, 'TError>>) =
-    ifInvalid<'T, 'TError> (AsyncTest test)
-
-let baseValidateAsync<'T, 'TError, 'L when 'L : comparison>
-    raceField (rules: ('L * ValidatorInfo<obj, 'TError>) list): Async<Result<Map<'L,'E>, Map<'L, 'TError list>>> =
-        async {
-            let mutable msgMap = Map<'L, 'TError list> Seq.empty
-            let mutable dataMap = Map<'L, 'E> Seq.empty
-            let mutable tail = rules
-            let mutable isBreak = false
-            let consumeResult key result =
-                match result with
-                | Ok input -> dataMap <- Map.add key input dataMap
-                | Error errors ->
-                    msgMap <- Map.add key errors msgMap
-            while not isBreak && List.isEmpty tail |> not do
-                let (key, info) = tail.Head
-                tail <- tail.Tail
-                match info with
-                | Validator (_, _, result) ->
-                    consumeResult key result
-                | AsyncValidator (_, _, result) ->
-                    let! result = result
-                    consumeResult key result
-                | Input input -> failwithf "Validation rules must be a function, but found input: %A" input
-                if raceField && Map.isEmpty msgMap |> not then
-                    isBreak <- true
-
-            return
-                if Map.isEmpty msgMap then Ok dataMap
-                else Error msgMap
-        }
-
-let inline allAsync<'T, 'TError, 'L when 'L : comparison> = baseValidateAsync<'T, 'TError, 'L> false
-let inline raceAsync<'T, 'TError, 'L when 'L : comparison> = baseValidateAsync<'T, 'TError, 'L> true
-
-// let internal createNewRecord (input: 'T) fields =
-//     let type' = typedefof<'T>
-//     FSharp.Reflection.FSharpValue.MakeRecord()
-
-
-let baseValidateSync<'T, 'TError, 'L when 'L : comparison>
-    raceField (rules: ('L * ValidatorInfo<obj, 'TError>) list): Result<Map<'L,'E>, Map<'L, 'TError list>> = 
-            let mutable msgMap = Map<'L, 'TError list> Seq.empty
-            let mutable dataMap = Map<'L, 'E> Seq.empty
-            let mutable tail = rules
-            let mutable isBreak = false
-            while not isBreak && List.isEmpty tail |> not do
-                let (key, info) = tail.Head
-                tail <- tail.Tail
-                match info with
-                | Validator (_, _, result) ->
-                    match result with
-                    | Ok input -> dataMap <- Map.add key input dataMap
-                    | Error errors ->
-                        (msgMap <- Map.add key errors msgMap)
-                | AsyncValidator (_, input, vali) ->
-                    failwithf "Sync validation cannot contain async rules: %A, whole input: %A" (input, vali) input
-                | Input input -> failwithf "Validation rules must be a function, but found input: %A, whole input: %A" input input
-                if raceField && Map.isEmpty msgMap |> not then
-                    isBreak <- true
-            if Map.isEmpty msgMap then Ok dataMap
-            else Error msgMap
-
-
-let inline all<'T, 'TError, 'L when 'L : comparison> = baseValidateSync<'T, 'TError, 'L> false
-let inline race<'T, 'TError, 'L when 'L : comparison> = baseValidateSync<'T, 'TError, 'L> true
-
-let inline allSync<'T, 'TError, 'L when 'L : comparison> = all
-let inline raceSync<'T, 'TError, 'L when 'L : comparison> = race
-
-let inline test input = Input ({race=true;skip=false}, input)
-let inline testAll input = Input ({race=false;skip=false}, input)
-
-let inline endTest<'T, 'TError> = castAny<ValidatorInfo<'T, 'TError>, ValidatorInfo<obj, 'TError>>
-
-
-let skipNone<'T, 'TError> (info: ValidatorInfo<'T option, 'TError>): ValidatorInfo<'T, 'TError> =
-    let (flags, input) = getInfoFlagsAndInput info
-    let dummy = castAny<obj, 'T> null
-    match input with
-    | Some i -> Validator (flags, i, Ok(i))
-    | None -> Validator ({flags with skip = true}, dummy, Ok(dummy))
-
-
-let skipError<'T, 'TError, 'Error> (info: ValidatorInfo<Result<'T, 'TError>, 'Error>) : ValidatorInfo<'T, 'Error> =
-    let (flags, input) = getInfoFlagsAndInput info
-    let dummy = castAny<obj, 'T> null
-    match input with
-    | Ok i -> Validator (flags, i, Ok(i))
-    | Error _ -> Validator ({flags with skip = true}, dummy, Ok(dummy))
-
-let inline ifInvalidByBool<'T, 'TError>(tester: 'T -> bool) =
-    (fun input -> if tester input then Some input else None)  |> Test |> ifInvalid<'T, 'TError>
-
-let ifNone<'T, 'TError> error info =
-    let _ifNone = Option.isSome |> ifInvalidByBool
-    _ifNone error info |> skipNone<'T, 'TError>
-
-let ifError<'T, 'TError, 'Error> error info =
-    let inline isOk (input: Result<'T, 'TError>) =
-        match input with
-        | Ok _ -> true
-        | Error _ -> false
-    let _ifError = isOk |> ifInvalidByBool
-    _ifError error info |> skipError<'T, 'TError, 'Error>
-
-let ifBlank<'TError> = String.IsNullOrWhiteSpace |> ifInvalidByBool<string, 'TError>
-
-let ifBlankAfterTrim<'TError> =
-    (fun (input: string) -> 
-        let input = input.Trim()
-        if String.IsNullOrWhiteSpace input 
-        then None 
-        else Some input)
-    |> Test |> ifInvalid<string, 'TError>
-
-let ifNotGt min =
-    (fun input -> input > min) |> ifInvalidByBool
-
-let ifNotGte min =
-    (fun input -> input >= min) |> ifInvalidByBool
-
-let ifNotLt max =
-    (fun input -> input < max) |> ifInvalidByBool
-
-let ifNotLte max =
-    (fun input -> input <= max) |> ifInvalidByBool
-
-let ifNotMaxLen len =
-    (fun input -> Seq.length input <= len) |> ifInvalidByBool 
-
-let ifNotMinLen len =
-    (fun input -> Seq.length input >= len) |> ifInvalidByBool 
-
-module Regexs = 
+module Regexs =
     let mail = Regex (@"^(([^<>()\[\]\\.,;:\s@""]+(\.[^<>()\[\]\\.,;:\s@""]+)*)|("".+""))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$", RegexOptions.Compiled ||| RegexOptions.ECMAScript)
     let url = Regex (@"^((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)$", RegexOptions.Compiled ||| RegexOptions.ECMAScript)
 
+type ValidateResult<'T> =
+    | Valid of 'T
+    | Invalid
+
+type FieldInfo<'T, 'E> = (string * 'T * Validator<'E>) option
+
+and Validator<'E>(all) =
+    let mutable errors: Map<string, 'E list> = Map.empty
+    let mutable hasError = false
+    member __.HasError with get() = hasError
+    member __.Errors with get() = errors
+
+    member __.PushError name error =
+        if not hasError then hasError <- true
+        errors <- Map.add name [error] errors
+    member x.Test<'T> name (value: 'T) =
+        errors <- Map.add name [] errors
+        if not all && hasError then None
+        else Some (name, value, x)
+    member x.TestSingle value =
+        x.Test singleKey value
+    member __.EndTest (input: FieldInfo<'T, 'E>) =
+        match input with
+        | Some (_, value, _) -> value
+        | None -> Unchecked.defaultof<'T>
+
+    member __.IsValidOpt<'T, 'T0, 'E> (tester: 'T -> ValidateResult<'T0>) (error: 'E) (input: FieldInfo<'T, 'E>) =
+        match input with
+        | Some (name, value, validator) ->
+            match tester value with
+            | Valid value' -> Some (name, value', validator)
+            | Invalid ->
+                validator.PushError name error
+                None
+        | None -> None
+    member x.IsValid<'T, 'E> (tester: 'T -> bool) =
+        x.IsValidOpt<'T, 'T, 'E> (fun v -> if tester v then Valid v else Invalid)
+
+    member __.IsValidOptAsync<'T, 'T0, 'E> (tester: 'T -> Async<ValidateResult<'T0>>) (error: 'E) (input: Async<FieldInfo<'T, 'E>>) =
+        async {
+            let! input = input
+            match input with
+            | Some (name, value, validator) ->
+                let! ret = tester value
+                return match ret with
+                        | Valid value' -> Some (name, value', validator)
+                        | Invalid ->
+                        validator.PushError name error
+                        None
+            | None -> return None
+        }
+
+    member x.IsValidAsync (tester: 'T -> Async<bool>) =
+        x.IsValidOptAsync<'T, 'T, 'E> (
+            fun v ->
+                async {
+                    let! ret = tester v
+                    return if ret then Valid v else Invalid
+                })
+
+    member __.Trim (input: (string * string * Validator<'Error>) option) =
+        match input with
+        | Some (key, value, vali) ->
+            Some(key, value.Trim(), vali)
+        | None -> None
+
+    member x.NotBlank =
+        x.IsValid<string, 'E> (String.IsNullOrEmpty)
+
+    member __.SkipNone input =
+        match input with
+        | Some (key, value, vali) ->
+            match value with
+            | Some value -> Some (key, value, vali)
+            | None -> None
+        | None -> None
+
+    member x.IsSome error =
+        x.IsValid<'T option, 'E> (fun t -> t.IsSome) error >> x.SkipNone
+
+    member __.SkipError input =
+        match input with
+        | Some (_, value, _) ->
+            match value with
+            | Ok _ -> input
+            | Error _ -> None
+        | None -> None
+
+    member x.Map fn =
+        x.IsValidOpt<'T, 'T0, 'E> (fn >> Valid) Unchecked.defaultof<'E>
+
+    member x.To fn =
+        x.IsValidOpt<'T, 'T0, 'E> (
+            fun t ->
+                try fn t |> Valid
+                with
+                | exn ->
+                    printfn "Validation Map error: fn: %A value: %A exn: %A" fn t exn
+                    Invalid
+        )
+
+    member x.IsOk<'T, 'TError> error =
+        let isOk = fun t -> match t with Ok _ -> true | Error _ -> false
+        x.IsValid<Result<'T, 'TError>, 'E> isOk error >> x.SkipError 
+
+    member x.Gt min =
+        x.IsValid (fun input -> input > min)
+
+    member x.Gte min =
+        x.IsValid (fun input -> input >= min)
+
+    member x.Lt max =
+        (fun input -> input < max) |> x.IsValid
+
+    member x.Lte max =
+        (fun input -> input <= max) |> x.IsValid
+
+    member x.MaxLen len =
+        (fun input -> Seq.length input <= len) |> x.IsValid
+
+    member x.MinLen len =
+        (fun input -> Seq.length input >= len) |> x.IsValid
 
 
-let ifNotMail<'TError> = Regexs.mail.IsMatch |> ifInvalidByBool<string, 'TError>
+    member x.IsMail<'TError> error input =
+        x.IsValid<string, 'TError> Regexs.mail.IsMatch error input
 
 
-let ifNotUrl<'TError> = Regexs.url.IsMatch |> ifInvalidByBool<string, 'TError>
+    member x.IsUrl<'TError> error input =
+        x.IsValid<string, 'TError> Regexs.url.IsMatch error input
 
-#if FABLE_COMPILER 
-let ifNotDegist<'TError> = (String.forall(fun c -> c >= '0' && c <= '9')) |> ifInvalidByBool<string, 'TError>
-#else
-let ifNotDegist<'TError> = (String.forall(Char.IsDigit)) |> ifInvalidByBool<string, 'TError>
-#endif
+    #if FABLE_COMPILER
+    member x.IsDegist<'TError> error input =
+        x.IsValid<string, 'TError> (String.forall(fun c -> c >= '0' && c <= '9')) error input
+    #else
+    member x.IfNotDegist<'TError> error input =
+        x.IsValid<string, 'TError> (String.forall(Char.IsDigit)) error input
+    #endif
+
+let validateSync all tester =
+    let validator = Validator(all)
+    let ret = tester validator
+    if validator.HasError then
+        Error validator.Errors
+    else
+        Ok ret
+let validateAsync all tester =
+    async {
+        let validator = Validator(all)
+        let! ret = tester validator
+        if validator.HasError then
+            return Error validator.Errors
+        else
+            return Ok ret
+    }
+
+let inline all tester = validateSync true tester
+let inline race tester = validateSync false tester
+let inline allAsync tester = validateAsync true tester
+let inline raceAsync tester = validateAsync false tester
+
+
+let single tester =
+    let validator = Validator(true)
+    let ret = tester validator
+    match ret with
+    | Some (_, value, _) -> Ok value
+    | None -> Error validator.Errors.[singleKey]
+
+let singleAsync tester =
+    async {
+        let validator = Validator(true)
+        let! ret = tester validator
+        return match ret with
+                | Some (_, value, _) -> Ok value
+                | None -> Error validator.Errors.[singleKey]
+    }
+
