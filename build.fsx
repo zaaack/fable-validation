@@ -188,7 +188,7 @@ Target "GenDocs" <| fun _ ->
     for msg in msgs do
       printfn "%s" msg.Message
     if not ok then
-        failwith "Generate docs failed"
+        printfn "Warn: Generate docs has errors"
 
 Target "Publish" (fun _ ->
     let versionRegex = Regex("<Version>(.*?)</Version>", RegexOptions.IgnoreCase)

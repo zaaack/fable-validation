@@ -5,7 +5,7 @@ open System.Text.RegularExpressions
 
 let private singleKey = "s"
 
-module ValidateRegexs =
+module ValidateRegexes =
     let mail = Regex (@"^(([^<>()\[\]\\.,;:\s@""]+(\.[^<>()\[\]\\.,;:\s@""]+)*)|("".+""))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$", RegexOptions.Compiled ||| RegexOptions.ECMAScript)
     let url = Regex (@"^((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)$", RegexOptions.Compiled ||| RegexOptions.ECMAScript)
 
@@ -173,10 +173,10 @@ and Validator<'E>(all) =
         (fun input -> enums |> List.contains input) |> x.IsValid<'T>
 
     member x.IsMail error input =
-        x.IsValid<string> ValidateRegexs.mail.IsMatch error input
+        x.IsValid<string> ValidateRegexes.mail.IsMatch error input
 
     member x.IsUrl<'TError> error input =
-        x.IsValid<string> ValidateRegexs.url.IsMatch error input
+        x.IsValid<string> ValidateRegexes.url.IsMatch error input
 
     #if FABLE_COMPILER
 
