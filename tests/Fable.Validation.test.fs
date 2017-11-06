@@ -170,7 +170,6 @@ describe "test rules" <| fun () ->
 
 
 
-
 type People = {
     name: string
     age: int
@@ -198,7 +197,7 @@ describe "test all" <| fun () ->
                     |> t.MaxLen 20 "maxlen 20"
                     |> t.MinLen 4 "minlen 4"
                     |> t.End;
-          age=t.Test People.Age 201
+          age = t.Test People.Age 201
                     |> t.Gt 0 "min 0"
                     |> t.Lt 200 "min 200"
                     |> t.End }
@@ -236,7 +235,7 @@ describe "test all" <| fun () ->
 
   itAsync "should async work" <| fun () ->
     promise {
-        let valid = {name=" abcd "; age=10}
+        let valid = { name = " abcd "; age = 10 }
         let testNameAsync =
             IsValidOptAsync<string, string, string> <| fun name ->
                 async { return Valid (name.Trim()) }

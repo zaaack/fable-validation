@@ -1,5 +1,8 @@
 # Fable.Validation
 
+[![Build Status](https://travis-ci.org/zaaack/fable-validation.svg "Build Status")](https://travis-ci.org/zaaack/fable-validation)
+[![NuGet version](https://badge.fury.io/nu/Fable.Validation.svg)](https://badge.fury.io/nu/Fable.Validation)
+
 ## Install
 ```sh
 paket install Fable.Validation
@@ -10,7 +13,7 @@ OR
 dotnet add package Fable.Validation
 ```
 
-## Usage
+## Example
 
 ```F#
 open System
@@ -73,7 +76,7 @@ async {
                         |> testNameAsync "should be right"
 
             return { name = name |> t.EndTest;
-                     age=t.Test People.Age valid.age
+                     age = t.Test People.Age valid.age
                             |> t.Gt 0 "min 0"
                             |> t.Lt 200 "min 200"
                             |> t.EndTest }

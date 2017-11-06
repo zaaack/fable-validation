@@ -1,13 +1,15 @@
+
 language: csharp
 sudo: required
 dist: trusty
 
 dotnet: 2.0.0
 mono:
-  - latest
+  - 5.2.0
+  - latest # => "stable release"
+
 os:
   - linux
-  - osx
 
 script:
   - ./build.sh
