@@ -32,10 +32,17 @@ and Validator<'E>(all) =
         async { return x.Test name value }
     member x.TestSingle value =
         x.Test singleKey value
-    member __.EndTest (input: FieldInfo<'T, 'E>) =
+    member __.End (input: FieldInfo<'T, 'E>) =
         match input with
         | Some (_, value, _) -> value
         | None -> Unchecked.defaultof<'T>
+    member __.EndAsync (input: Async<FieldInfo<'T, 'E>>) =
+        async {
+            let! input = input
+            match input with
+            | Some (_, value, _) -> return value
+            | None -> return Unchecked.defaultof<'T>
+        }
     /// Validate with a custom tester, return ValidateResult DU to modify input value
     member __.IsValidOpt<'T, 'T0> (tester: 'T -> ValidateResult<'T0>) (error: 'E) (input: FieldInfo<'T, 'E>) =
         match input with
