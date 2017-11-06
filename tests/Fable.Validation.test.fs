@@ -182,34 +182,56 @@ describe "test all" <| fun () ->
   it "should all work" <| fun () ->
     let valid = {name="abcd"; age=10}
     let result =  all <| fun t ->
-        { name=t.Test People.Name valid.name
-            |> t.MaxLen 20 "maxlen 20" |> t.MinLen 4 "minlen 4" |> t.EndTest;
-          age=t.Test People.Age valid.age
-            |> t.Gt 0 "min 0" |> t.Lt 200 "min 200" |> t.EndTest }
+        { name = t.Test People.Name valid.name
+                    |> t.MaxLen 20 "maxlen 20"
+                    |> t.MinLen 4 "minlen 4"
+                    |> t.End;
+          age = t.Test People.Age valid.age
+                    |> t.Gt 0 "min 0"
+                    |> t.Lt 200 "min 200"
+                    |> t.End }
+
     Assert.AreEqual (result, Ok(valid), "0")
 
     let result =  all <| fun t ->
-        { name=t.Test People.Name "abc"
-            |> t.MaxLen 20 "maxlen 20" |> t.MinLen 4 "minlen 4" |> t.EndTest;
+        { name = t.Test People.Name "abc"
+                    |> t.MaxLen 20 "maxlen 20"
+                    |> t.MinLen 4 "minlen 4"
+                    |> t.End;
           age=t.Test People.Age 201
-            |> t.Gt 0 "min 0" |> t.Lt 200 "min 200" |> t.EndTest }
-    Assert.AreEqual (result, Error(Map [People.Name, ["minlen 4"]; People.Age, ["min 200"]]), "1")
+                    |> t.Gt 0 "min 0"
+                    |> t.Lt 200 "min 200"
+                    |> t.End }
+
+    Assert.AreEqual (result, Error(Map [ People.Name, ["minlen 4"]
+                                         People.Age, ["min 200"] ]), "1")
 
   it "should fast work" <| fun () ->
-    let valid = {name="abcd"; age=10}
+    let valid = { name = "abcd"; age = 10 }
     let result = fast <| fun t ->
-        { name=t.Test People.Name valid.name
-            |> t.MaxLen 20 "maxlen 20" |> t.MinLen 4 "minlen 4" |> t.EndTest;
-          age=t.Test People.Age valid.age
-            |> t.Gt 0 "min 0" |> t.Lt 200 "min 200" |> t.EndTest }
+        { name = t.Test People.Name valid.name
+                    |> t.MaxLen 20 "maxlen 20"
+                    |> t.MinLen 4 "minlen 4"
+                    |> t.End
+
+          age = t.Test People.Age valid.age
+                    |> t.Gt 0 "min 0"
+                    |> t.Lt 200 "min 200"
+                    |> t.End }
     Assert.AreEqual (result, Ok(valid), "should be ok")
 
     let result = fast <| fun t ->
-        { name=t.Test People.Name "abc"
-            |> t.MaxLen 20 "maxlen 20" |> t.MinLen 4 "minlen 4" |> t.EndTest;
-          age=t.Test People.Age 201
-            |> t.Gt 0 "min 0" |> t.Lt 200 "min 200" |> t.EndTest }
-    Assert.AreEqual (result, Error(Map [People.Age, []; People.Name, ["minlen 4"]]), "should be error")
+        { name = t.Test People.Name "abc"
+                    |> t.MaxLen 20 "maxlen 20"
+                    |> t.MinLen 4 "minlen 4"
+                    |> t.End
+
+          age = t.Test People.Age 201
+                    |> t.Gt 0 "min 0"
+                    |> t.Lt 200 "min 200"
+                    |> t.End }
+    Assert.AreEqual (result, Error(Map [ People.Age, []
+                                         People.Name, ["minlen 4"]]), "should be error")
 
 
   itAsync "should async work" <| fun () ->
@@ -217,16 +239,22 @@ describe "test all" <| fun () ->
         let valid = {name=" abcd "; age=10}
         let testNameAsync =
             IsValidOptAsync<string, string, string> <| fun name ->
-                async {
-                    return Valid (name.Trim())
-                }
+                async { return Valid (name.Trim()) }
+
         let asyncResult = fastAsync <| fun t ->
             async {
-                let! name = t.Test People.Name valid.name |> t.ToAsync  |> testNameAsync "valid"
-                return { name=name |> t.EndTest;
-                         age=t.Test People.Age valid.age
-                    |> t.Gt 0 "min 0" |> t.Lt 200 "min 200" |> t.EndTest }
+                let! name = t.Test People.Name valid.name
+                                |> t.ToAsync
+                                |> testNameAsync "valid"
+                                |> t.EndAsync
+
+                return { name = name;
+                         age  = t.Test People.Age valid.age
+                                    |> t.Gt 0 "min 0"
+                                    |> t.Lt 200 "min 200"
+                                    |> t.End }
             }
+
         let! result = asyncResult |> Async.StartAsPromise
         Assert.AreEqual (result, Ok({name="abcd"; age=10}))
     }
