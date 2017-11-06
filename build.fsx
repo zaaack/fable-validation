@@ -184,10 +184,15 @@ let needsPublishing (versionRegex: Regex) (releaseNotes: ReleaseNotes) projFile 
                 not sameVersion
 
 Target "GenDocs" <| fun _ -> 
-    let ok, msgs = FSIHelper.executeFSI Environment.CurrentDirectory "./tools/docgen.fsx" []
-    for msg in msgs do
-      printfn "%s" msg.Message
-    if not ok then
+    // FSIHelper would cause errors, don't know why
+    let out = ExecProcessAndReturnMessages (fun p ->
+        p.FileName <- "fsharpi"
+        p.Arguments <- "./tools/docgen.fsx"
+        p.WorkingDirectory <- Environment.CurrentDirectory
+        p.UseShellExecute <- false) TimeSpan.MaxValue
+    for err in out.Errors do printfn "%s" err
+    for msg in out.Messages do printfn "%s" msg
+    if not out.OK then
         printfn "Warn: Generate docs has errors"
 
 Target "Publish" (fun _ ->
