@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard1.6</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Fable.Validation.Tests.fs" />
+    <Compile Include="Fable.Validation.test.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
   <ItemGroup>

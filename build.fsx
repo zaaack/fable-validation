@@ -102,29 +102,51 @@ Target "DotnetBuild" (fun _ ->
 ))
 
 
-let fableWebpack workingDir =
+let fableSplitter workingDir =
     DotNetCli.RunCommand(fun c ->
         { c with WorkingDir = workingDir
                  ToolPath = dotnetExePath }
-        ) "fable webpack --port free"
+        ) "fable npm-run build:test"
 
 let mocha args =
     Yarn(fun yarnParams ->
         { yarnParams with Command = args |> sprintf "run mocha -- %s" |> YarnCommand.Custom }
     )
 
-Target "MochaTest" (fun _ ->
+Target "QuickTest" (fun _ ->
     !! testsGlob
     |> Seq.iter(fun proj ->
         let projDir = proj |> DirectoryName
         //Compile to JS
-        fableWebpack projDir
+        fableSplitter projDir
 
         //Run mocha tests
-        let projDirOutput = projDir </> "bin"
+        let projDirOutput = projDir </> "bin" </> "lib" </> "**/*.test.js"
         mocha projDirOutput
     )
 
+)
+
+Target "MochaTest" ignore
+
+"QuickTest"
+  ==> "MochaTest"
+
+
+Target "Meta" (fun _ ->
+    [ "<Project xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">"
+      "<PropertyGroup>"
+      "<Description>A Validation library for Fable</Description>"
+      "<PackageProjectUrl>https://github.com/zaaack/fable-validation</PackageProjectUrl>"
+      "<PackageLicenseUrl>https://raw.githubusercontent.com/zaaack/fable-validation/master/LICENSE.md</PackageLicenseUrl>"
+    //   "<PackageIconUrl>https://raw.githubusercontent.com/zaaack/fable-validation/master/docs/files/img/logo.png</PackageIconUrl>"
+      "<RepositoryUrl>https://github.com/zaaack/fable-validation.git</RepositoryUrl>"
+      "<PackageTags>fable;elm;elmish;validation;fsharp</PackageTags>"
+      "<Authors>Zack Young</Authors>"
+      sprintf "<Version>%s</Version>" (string release.SemVer)
+      "</PropertyGroup>"
+      "</Project>"]
+    |> WriteToFile false "Meta.props"
 )
 
 Target "DotnetPack" (fun _ ->
@@ -199,7 +221,9 @@ Target "Release" (fun _ ->
     Branches.pushTag "" "origin" release.NugetVersion
 )
 
+
 "Clean"
+  ==> "Meta"
   ==> "InstallDotNetCore"
   ==> "YarnInstall"
   ==> "DotnetRestore"

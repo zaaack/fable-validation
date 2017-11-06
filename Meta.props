@@ -1,0 +1,11 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<PropertyGroup>
+<Description>A Validation library for Fable</Description>
+<PackageProjectUrl>https://github.com/zaaack/fable-validation</PackageProjectUrl>
+<PackageLicenseUrl>https://raw.githubusercontent.com/zaaack/fable-validation/master/LICENSE.md</PackageLicenseUrl>
+<RepositoryUrl>https://github.com/zaaack/fable-validation.git</RepositoryUrl>
+<PackageTags>fable;elm;elmish;validation;fsharp</PackageTags>
+<Authors>Zack Young</Authors>
+<Version>0.1.0</Version>
+</PropertyGroup>
+</Project>

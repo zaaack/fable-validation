@@ -1,17 +1,16 @@
 {
     "scripts": {
-        "jest": "jest --coverage",
-        "test": "dotnet fable npm-run jest"
+        "mocha": "mocha  --require babel-register",
+        "build:test": "fable-splitter ./tests/Fable.Validation.Tests.fsproj -o ./tests/bin/lib"
     },
     "devDependencies": {
-        "babel-core": "6.26.0",
-        "babel-loader": "7.1.1",
-        "babel-preset-es2015": "6.24.1",
-        "fable-loader": "1.0.7",
-        "isomorphic-fetch": "2.2.1",
-        "jest": "^21.0.2",
-        "jest-fable-preprocessor": "^1.3.3",
-        "mocha": "3.5.0",
-        "webpack": "3.5.5"
+        "babel-core": "^6.26.0",
+        "babel-loader": "^7.1.1",
+        "babel-preset-env": "^1.6.0",
+        "babel-register": "^6.26.0",
+        "fable-loader": "^1.0.7",
+        "fable-splitter": "^0.1.20",
+        "isomorphic-fetch": "^2.2.1",
+        "mocha": "^3.5.0"
     }
 }

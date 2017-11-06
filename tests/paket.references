@@ -1,4 +1,6 @@
 FSharp.Core
 Fable.Core
-Fable.Import.Jest 
+Fable.Import.Node
+Fable.Import.Mocha
+Fable.PowerPack
 dotnet-fable
