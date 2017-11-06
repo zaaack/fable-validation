@@ -186,7 +186,7 @@ let needsPublishing (versionRegex: Regex) (releaseNotes: ReleaseNotes) projFile 
 Target "GenDocs" <| fun _ -> 
     // FSIHelper would cause errors, don't know why
     let out = ExecProcessAndReturnMessages (fun p ->
-        p.FileName <- "fsharpi"
+        p.FileName <- if EnvironmentHelper.isWindows then "fsi" else "fsharpi"
         p.Arguments <- "./tools/docgen.fsx"
         p.WorkingDirectory <- Environment.CurrentDirectory
         p.UseShellExecute <- false) TimeSpan.MaxValue
