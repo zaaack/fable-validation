@@ -192,19 +192,19 @@ and Validator<'E>(all) =
 
 let private instance<'E> = Validator<'E>(true)
 
-/// IsValid helper for custom rule functions, you can also extends Validator class directly is recommend
+/// IsValid helper from Validator method for custom rule functions, you can also extends Validator class directly.
 let IsValid<'T, 'E> = instance<'E>.IsValid<'T>
 
-/// IsValidOpt helper for custom rule functions, you can also extends Validator class directly is recommend
+/// IsValidOpt helper from Validator method for custom rule functions, you can also extends Validator class directly.
 let IsValidOpt<'T, 'T0, 'E> = instance<'E>.IsValidOpt<'T, 'T0>
 
-/// IsValidAsync helper for custom rule functions, you can also extends Validator class directly is recommend
+/// IsValidAsync helper from Validator method for custom rule functions, you can also extends Validator class directly.
 let IsValidAsync<'T, 'E> = instance<'E>.IsValidAsync<'T>
 
-/// IsValidOptAsync helper for custom rule functions, you can also extends Validator class directly is recommend
+/// IsValidOptAsync helper from Validator method for custom rule functions, you can also extends Validator class directly.
 let IsValidOptAsync<'T, 'T0, 'E> = instance<'E>.IsValidOptAsync<'T, 'T0>
 
-let validateSync all tester =
+let validateSync all (tester: Validator<'E> -> 'T) =
     let validator = Validator(all)
     let ret = tester validator
     if validator.HasError then
@@ -212,7 +212,7 @@ let validateSync all tester =
     else
         Ok ret
 
-let validateAsync all tester =
+let validateAsync all (tester: Validator<'E> -> Async<'T>) =
     async {
         let validator = Validator(all)
         let! ret = tester validator
@@ -223,17 +223,17 @@ let validateAsync all tester =
     }
 
 /// validate all fields and return a custom type,
-let inline all tester = validateSync true tester
+let inline all (tester: Validator<'E> -> 'T) = validateSync true tester
 
-/// Return a custom type after first error occurred
-let inline fast tester = validateSync false tester
+/// Exit after first error occurred and return a custom type
+let inline fast (tester: Validator<'E> -> 'T) = validateSync false tester
 
-let inline allAsync tester = validateAsync true tester
+let inline allAsync (tester: Validator<'E> -> Async<'T>) = validateAsync true tester
 
-let inline fastAsync tester = validateAsync false tester
+let inline fastAsync (tester: Validator<'E> -> Async<'T>) = validateAsync false tester
 
 /// Validate single value
-let single tester =
+let single (tester: Validator<'E> -> FieldInfo<'T, 'E>)  =
     let validator = Validator(true)
     let ret = tester validator
     match ret with
@@ -241,7 +241,7 @@ let single tester =
     | None -> Error validator.Errors.[singleKey]
 
 /// Validate single value asynchronize
-let singleAsync tester =
+let singleAsync (tester: Validator<'E> -> Async<FieldInfo<'T, 'E>>) =
     async {
         let validator = Validator(true)
         let! ret = tester validator

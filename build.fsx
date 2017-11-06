@@ -117,6 +117,7 @@ Target "QuickTest" (fun _ ->
     !! testsGlob
     |> Seq.iter(fun proj ->
         let projDir = proj |> DirectoryName
+        printfn "projDir: %A" projDir
         //Compile to JS
         fableSplitter projDir
 
@@ -128,9 +129,6 @@ Target "QuickTest" (fun _ ->
 )
 
 Target "MochaTest" ignore
-
-"QuickTest"
-  ==> "MochaTest"
 
 
 Target "Meta" (fun _ ->
@@ -185,6 +183,13 @@ let needsPublishing (versionRegex: Regex) (releaseNotes: ReleaseNotes) projFile 
                     Logger.warnfn "Already version %s, no need to publish." releaseNotes.NugetVersion
                 not sameVersion
 
+Target "GenDocs" <| fun _ -> 
+    let ok, msgs = FSIHelper.executeFSI Environment.CurrentDirectory "./tools/docgen.fsx" []
+    for msg in msgs do
+      printfn "%s" msg.Message
+    if not ok then
+        failwith "Generate docs failed"
+
 Target "Publish" (fun _ ->
     let versionRegex = Regex("<Version>(.*?)</Version>", RegexOptions.IgnoreCase)
     !! srcGlob
@@ -230,7 +235,11 @@ Target "Release" (fun _ ->
   ==> "DotnetBuild"
   ==> "MochaTest"
   ==> "DotnetPack"
+  ==> "GenDocs"
   ==> "Publish"
   ==> "Release"
 
+"QuickTest"
+  ==> "MochaTest"
+  
 RunTargetOrDefault "DotnetPack"

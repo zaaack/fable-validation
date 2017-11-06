@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Validator<'E> - fable-validation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="Zack Young">
+
+    <script src="https://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+
+    <link type="text/css" rel="stylesheet" href="./content/style.css" />
+    <script type="text/javascript" src="./content/tips.js"></script>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+      <div class="masthead">
+        <ul class="nav nav-pills pull-right" style="padding-right: 100px;">
+          <li><a href="http://fable.io">fable.io</a></li>
+          <li><a href="https://fable-elmish.github.io/elmish/">elmish</a></li>
+        </ul>
+        <h3 class="muted"><a href="./index.html">fable-validation</a></h3>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="span9" id="main">
+          
+
+
+
+<h1>Validator<'E></h1>
+<p>
+  <span>Namespace: Fable.Validation</span><br />
+  <span>Parent Module: <a href="fable-validation-core.html">Core</a></span>
+</p>
+<div class="xmldoc">
+</div>
+  <h3>Constructors</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Constructor</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '19', 19)" onmouseover="showTip(event, '19', 19)">
+            new(all)
+          </code>
+          <div class="tip" id="19">
+            <strong>Signature:</strong> all:bool -&gt; Validator&lt;&#39;E&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L18-18" class="github-link" target="_blank">[src]</a>
+          
+              <p>CompiledName: <code>.ctor</code></p>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <h3>Instance members</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Instance member</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '20', 20)" onmouseover="showTip(event, '20', 20)">
+            End(input)
+          </code>
+          <div class="tip" id="20">
+            <strong>Signature:</strong> input:FieldInfo&lt;&#39;T,&#39;E&gt; -&gt; &#39;T<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L40-40" class="github-link" target="_blank">[src]</a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '21', 21)" onmouseover="showTip(event, '21', 21)">
+            EndAsync(input)
+          </code>
+          <div class="tip" id="21">
+            <strong>Signature:</strong> input:Async&lt;FieldInfo&lt;&#39;T,&#39;E&gt;&gt; -&gt; Async&lt;&#39;T&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L46-46" class="github-link" target="_blank">[src]</a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '22', 22)" onmouseover="showTip(event, '22', 22)">
+            Enum(enums)
+          </code>
+          <div class="tip" id="22">
+            <strong>Signature:</strong> (enums:&#39;T list) -&gt; &#39;E -&gt; FieldInfo&lt;&#39;T,&#39;E&gt; -&gt; (string * &#39;T * Validator&lt;&#39;E&gt;) option<br />
+                          <strong>Type parameters:</strong> 'E          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L172-172" class="github-link" target="_blank">[src]</a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '23', 23)" onmouseover="showTip(event, '23', 23)">
+            Errors
+          </code>
+          <div class="tip" id="23">
+            <strong>Signature:</strong> Map&lt;string,&#39;E list&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L23-23" class="github-link" target="_blank">[src]</a>
+          
+              <p>CompiledName: <code>get_Errors</code></p>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '24', 24)" onmouseover="showTip(event, '24', 24)">
+            Gt(min err)
+          </code>
+          <div class="tip" id="24">
+            <strong>Signature:</strong> min:&#39;?7849 -&gt; err:&#39;E -&gt; FieldInfo&lt;&#39;?7849,&#39;E&gt; -&gt; (string * &#39;?7849 * Validator&lt;&#39;E&gt;) option<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L154-154" class="github-link" target="_blank">[src]</a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '25', 25)" onmouseover="showTip(event, '25', 25)">
+            Gte(min)
+          </code>
+          <div class="tip" id="25">
+            <strong>Signature:</strong> min:&#39;?7852 -&gt; &#39;E -&gt; FieldInfo&lt;&#39;?7852,&#39;E&gt; -&gt; (string * &#39;?7852 * Validator&lt;&#39;E&gt;) option<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L157-157" class="github-link" target="_blank">[src]</a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '26', 26)" onmouseover="showTip(event, '26', 26)">
+            HasError
+          </code>
+          <div class="tip" id="26">
+            <strong>Signature:</strong> bool<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L21-21" class="github-link" target="_blank">[src]</a>
+          
+              <p>CompiledName: <code>get_HasError</code></p>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '27', 27)" onmouseover="showTip(event, '27', 27)">
+            IsDegist(error input)
+          </code>
+          <div class="tip" id="27">
+            <strong>Signature:</strong> error:&#39;E -&gt; input:FieldInfo&lt;string,&#39;E&gt; -&gt; (string * string * Validator&lt;&#39;E&gt;) option<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L188-188" class="github-link" target="_blank">[src]</a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '28', 28)" onmouseover="showTip(event, '28', 28)">
+            IsMail(error input)
+          </code>
+          <div class="tip" id="28">
+            <strong>Signature:</strong> error:&#39;E -&gt; input:FieldInfo&lt;string,&#39;E&gt; -&gt; (string * string * Validator&lt;&#39;E&gt;) option<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L175-175" class="github-link" target="_blank">[src]</a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '29', 29)" onmouseover="showTip(event, '29', 29)">
+            IsOk(error)
+          </code>
+          <div class="tip" id="29">
+            <strong>Signature:</strong> error:&#39;E -&gt; FieldInfo&lt;Result&lt;&#39;T,&#39;TError&gt;,&#39;E&gt; -&gt; (string * &#39;T * Validator&lt;&#39;E&gt;) option<br />
+                          <strong>Type parameters:</strong> 'TError          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L129-129" class="github-link" target="_blank">[src]</a>
+          <p>Test a Result value is Ok and unwrap it
+it will collect error</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '30', 30)" onmouseover="showTip(event, '30', 30)">
+            IsSome(error)
+          </code>
+          <div class="tip" id="30">
+            <strong>Signature:</strong> error:&#39;E -&gt; FieldInfo&lt;&#39;T option,&#39;E&gt; -&gt; (string * &#39;T * Validator&lt;&#39;E&gt;) option<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L114-114" class="github-link" target="_blank">[src]</a>
+          <p>Test an option value is some and unwrap it
+it will collect error</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '31', 31)" onmouseover="showTip(event, '31', 31)">
+            IsUrl(error input)
+          </code>
+          <div class="tip" id="31">
+            <strong>Signature:</strong> error:&#39;E -&gt; input:FieldInfo&lt;string,&#39;E&gt; -&gt; (string * string * Validator&lt;&#39;E&gt;) option<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L178-178" class="github-link" target="_blank">[src]</a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '32', 32)" onmouseover="showTip(event, '32', 32)">
+            IsValid(tester)
+          </code>
+          <div class="tip" id="32">
+            <strong>Signature:</strong> (tester:(&#39;T -&gt; bool)) -&gt; &#39;E -&gt; FieldInfo&lt;&#39;T,&#39;E&gt; -&gt; (string * &#39;T * Validator&lt;&#39;E&gt;) option<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L66-66" class="github-link" target="_blank">[src]</a>
+          <p>Validate with a custom tester, return bool</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '33', 33)" onmouseover="showTip(event, '33', 33)">
+            IsValidAsync(tester)
+          </code>
+          <div class="tip" id="33">
+            <strong>Signature:</strong> (tester:(&#39;T -&gt; Async&lt;bool&gt;)) -&gt; &#39;E -&gt; Async&lt;FieldInfo&lt;&#39;T,&#39;E&gt;&gt; -&gt; Async&lt;(string * &#39;T * Validator&lt;&#39;E&gt;) option&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L83-83" class="github-link" target="_blank">[src]</a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '34', 34)" onmouseover="showTip(event, '34', 34)">
+            IsValidOpt(tester error input)
+          </code>
+          <div class="tip" id="34">
+            <strong>Signature:</strong> (tester:(&#39;T -&gt; ValidateResult&lt;&#39;T0&gt;)) -&gt; error:&#39;E -&gt; input:FieldInfo&lt;&#39;T,&#39;E&gt; -&gt; (string * &#39;T0 * Validator&lt;&#39;E&gt;) option<br />
+                          <strong>Type parameters:</strong> 'T0          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L55-55" class="github-link" target="_blank">[src]</a>
+          <p>Validate with a custom tester, return ValidateResult DU to modify input value</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '35', 35)" onmouseover="showTip(event, '35', 35)">
+            IsValidOptAsync(tester error input)
+          </code>
+          <div class="tip" id="35">
+            <strong>Signature:</strong> (tester:(&#39;T -&gt; Async&lt;ValidateResult&lt;&#39;T0&gt;&gt;)) -&gt; error:&#39;E -&gt; input:Async&lt;FieldInfo&lt;&#39;T,&#39;E&gt;&gt; -&gt; Async&lt;(string * &#39;T0 * Validator&lt;&#39;E&gt;) option&gt;<br />
+                          <strong>Type parameters:</strong> 'T0          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L69-69" class="github-link" target="_blank">[src]</a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '36', 36)" onmouseover="showTip(event, '36', 36)">
+            Lt(max)
+          </code>
+          <div class="tip" id="36">
+            <strong>Signature:</strong> max:&#39;?7855 -&gt; &#39;E -&gt; FieldInfo&lt;&#39;?7855,&#39;E&gt; -&gt; (string * &#39;?7855 * Validator&lt;&#39;E&gt;) option<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L160-160" class="github-link" target="_blank">[src]</a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '37', 37)" onmouseover="showTip(event, '37', 37)">
+            Lte(max)
+          </code>
+          <div class="tip" id="37">
+            <strong>Signature:</strong> max:&#39;?7858 -&gt; &#39;E -&gt; FieldInfo&lt;&#39;?7858,&#39;E&gt; -&gt; (string * &#39;?7858 * Validator&lt;&#39;E&gt;) option<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L163-163" class="github-link" target="_blank">[src]</a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '38', 38)" onmouseover="showTip(event, '38', 38)">
+            Map(fn)
+          </code>
+          <div class="tip" id="38">
+            <strong>Signature:</strong> (fn:(&#39;T -&gt; &#39;T0)) -&gt; FieldInfo&lt;&#39;T,&#39;E&gt; -&gt; (string * &#39;T0 * Validator&lt;&#39;E&gt;) option<br />
+                          <strong>Type parameters:</strong> 'T0          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L135-135" class="github-link" target="_blank">[src]</a>
+          <p>Map a function or constructor to the value, aka lift
+fn shouldn't throw error, if it would, please using <code>t.To fn error</code></p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '39', 39)" onmouseover="showTip(event, '39', 39)">
+            MaxLen(len)
+          </code>
+          <div class="tip" id="39">
+            <strong>Signature:</strong> len:int -&gt; &#39;E -&gt; FieldInfo&lt;&#39;?7861,&#39;E&gt; -&gt; (string * &#39;?7861 * Validator&lt;&#39;E&gt;) option<br />
+                          <strong>Type parameters:</strong> '?7862          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L166-166" class="github-link" target="_blank">[src]</a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '40', 40)" onmouseover="showTip(event, '40', 40)">
+            MinLen(len)
+          </code>
+          <div class="tip" id="40">
+            <strong>Signature:</strong> len:int -&gt; &#39;E -&gt; FieldInfo&lt;&#39;?7865,&#39;E&gt; -&gt; (string * &#39;?7865 * Validator&lt;&#39;E&gt;) option<br />
+                          <strong>Type parameters:</strong> '?7866          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L169-169" class="github-link" target="_blank">[src]</a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '41', 41)" onmouseover="showTip(event, '41', 41)">
+            NotBlank
+          </code>
+          <div class="tip" id="41">
+            <strong>Signature:</strong> &#39;E -&gt; FieldInfo&lt;string,&#39;E&gt; -&gt; (string * string * Validator&lt;&#39;E&gt;) option<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L99-99" class="github-link" target="_blank">[src]</a>
+          <p>Validate with <code>String.IsNullOrWhiteSpace</code></p>
+
+
+              <p>CompiledName: <code>get_NotBlank</code></p>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '42', 42)" onmouseover="showTip(event, '42', 42)">
+            PushError(name error)
+          </code>
+          <div class="tip" id="42">
+            <strong>Signature:</strong> name:string -&gt; error:&#39;E -&gt; unit<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L25-25" class="github-link" target="_blank">[src]</a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '43', 43)" onmouseover="showTip(event, '43', 43)">
+            SkipError(input)
+          </code>
+          <div class="tip" id="43">
+            <strong>Signature:</strong> (input:(&#39;?7828 * Result&lt;&#39;?7829,&#39;?7830&gt; * &#39;?7831) option) -&gt; (&#39;?7828 * &#39;?7829 * &#39;?7831) option<br />
+                          <strong>Type parameters:</strong> '?7829, '?7830, '?7831          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L119-119" class="github-link" target="_blank">[src]</a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '44', 44)" onmouseover="showTip(event, '44', 44)">
+            SkipNone(input)
+          </code>
+          <div class="tip" id="44">
+            <strong>Signature:</strong> (input:(&#39;?7820 * &#39;?7821 option * &#39;?7822) option) -&gt; (&#39;?7820 * &#39;?7821 * &#39;?7822) option<br />
+                          <strong>Type parameters:</strong> '?7821, '?7822          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L104-104" class="github-link" target="_blank">[src]</a>
+          <p>Skip following rules if the option value is None
+it won't collect error</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '45', 45)" onmouseover="showTip(event, '45', 45)">
+            Test(name value)
+          </code>
+          <div class="tip" id="45">
+            <strong>Signature:</strong> name:string -&gt; value:&#39;T -&gt; (string * &#39;T * Validator&lt;&#39;E&gt;) option<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L29-29" class="github-link" target="_blank">[src]</a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '46', 46)" onmouseover="showTip(event, '46', 46)">
+            TestAsync(name value)
+          </code>
+          <div class="tip" id="46">
+            <strong>Signature:</strong> name:string -&gt; value:&#39;T -&gt; Async&lt;(string * &#39;T * Validator&lt;&#39;E&gt;) option&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L34-34" class="github-link" target="_blank">[src]</a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '47', 47)" onmouseover="showTip(event, '47', 47)">
+            TestSingle(value)
+          </code>
+          <div class="tip" id="47">
+            <strong>Signature:</strong> value:&#39;?7792 -&gt; (string * &#39;?7792 * Validator&lt;&#39;E&gt;) option<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L37-37" class="github-link" target="_blank">[src]</a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '48', 48)" onmouseover="showTip(event, '48', 48)">
+            To(fn)
+          </code>
+          <div class="tip" id="48">
+            <strong>Signature:</strong> (fn:(&#39;T -&gt; &#39;T0)) -&gt; &#39;E -&gt; FieldInfo&lt;&#39;T,&#39;E&gt; -&gt; (string * &#39;T0 * Validator&lt;&#39;E&gt;) option<br />
+                          <strong>Type parameters:</strong> 'T0          </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L140-140" class="github-link" target="_blank">[src]</a>
+          <p>Convert the input value by fn
+if fn throws error then it will collect error</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '49', 49)" onmouseover="showTip(event, '49', 49)">
+            ToAsync(input)
+          </code>
+          <div class="tip" id="49">
+            <strong>Signature:</strong> input:FieldInfo&lt;&#39;T,&#39;E&gt; -&gt; Async&lt;FieldInfo&lt;&#39;T,&#39;E&gt;&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L151-151" class="github-link" target="_blank">[src]</a>
+          <p>Convert a synchronize validate pipe to asynchronize</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '50', 50)" onmouseover="showTip(event, '50', 50)">
+            Trim(input)
+          </code>
+          <div class="tip" id="50">
+            <strong>Signature:</strong> (input:(string * string * Validator&lt;&#39;Error&gt;) option) -&gt; (string * string * Validator&lt;&#39;Error&gt;) option<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L92-92" class="github-link" target="_blank">[src]</a>
+          
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+        </div>
+        <div class="span3">
+          <a href="./index.html">
+            <!-- <img src="./misc/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" /> -->
+          </a>
+
+          <ul class="nav nav-list" id="menu">
+            <li class="nav-header">fable-validation</li>
+            <li><a href="./index.html">Home page</a></li>
+            <li class="divider"></li>
+            <li><a href="http://nuget.org/packages/Fable.Validation">Get Library via NuGet</a></li>
+            <li><a href="https://github.com/zaaack/fable-validation">Source Code on GitHub</a></li>
+            <li><a href="https://github.com/zaaack/fable-validation/blob/master/LICENSE.md">License (MIT)</a></li>
+            <li><a href="https://github.com/zaaack/fable-validation/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
+
+            <!-- <li class="nav-header">Using F# Formatting</li>
+            <li><a href="./literate.html">Literate programming</a></li>
+            <li><a href="./evaluation.html">Embedding output</a></li>
+            <li><a href="./markdown.html">Markdown parser</a></li>
+            <li><a href="./codeformat.html">F# code formatting</a></li>
+            <li><a href="./metadata.html">Library documentation</a></li>
+            <li><a href="./commandline.html">Using command line tool</a></li>
+
+            <li class="nav-header">Examples</li>
+            <li><a href="./sidescript.html">Literate F# script</a></li>
+            <li><a href="./sidemarkdown.html">Literate Markdown file</a></li>
+            <li><a href="./sideextensions.html">Markdown extensions</a></li> -->
+
+            <!-- <li class="nav-header">Documentation</li>
+            <li><a href="./reference/index.html">API Reference</a></li> -->
+            <!-- <li><a href="./development.html">Contribute / Development Topics</a></li>
+            <li><a href="./diagnostics.html">Diagnostics &amp; debugging</a></li> -->
+            <!-- <li class="divider"></li>
+            <li><a href="./reference/fsharp-markdown-markdown.html">Markdown type</a></li>
+            <li><a href="./reference/fsharp-codeformat-codeformat.html">CodeFormat type</a></li>
+            <li><a href="./reference/fsharp-literate-literate.html">Literate type</a></li>
+            <li><a href="./reference/fsharp-metadataformat-metadataformat.html">MetadataFormat type</a></li> -->
+          </ul>
+        </div>
+      </div>
+    </div>
+    <a href="https://github.com/zaaack/fable-validation"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+  </body>
+  </html>

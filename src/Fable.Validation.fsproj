@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="../Meta.props" />
   <PropertyGroup>
@@ -13,5 +14,5 @@
     <!-- If we don't do it like this Nuget won't respect the folder structure -->
     <!-- <Content Include="extra\" PackagePath="fable\extra" /> -->
   </ItemGroup>
-  <Import Project="../.paket/Paket.Restore.targets" />
+  <Import Project="..\.paket\Paket.Restore.targets" />
 </Project>
