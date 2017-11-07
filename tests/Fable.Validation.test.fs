@@ -79,22 +79,22 @@ describe "test rules" <| fun () ->
 
   it "should Gt/Gte/Lt/Lte work" <| fun () ->
     let n1 = 1
-    let result =  single <| fun t -> t.TestSingle n1 |> t.Gt 0 "should > 0"
+    let result =  single <| fun t -> t.TestSingle n1 |> t.Gt 0 "should > {min}"
     Assert.AreEqual (result, Ok(n1))
     let result =  single <| fun t -> t.TestSingle n1 |> t.Gt 1 "should > 0"
     Assert.AreEqual (result, Error(["should > 0"]))
-    let result =  single <| fun t -> t.TestSingle n1 |> t.Lt 2 "should < 2"
+    let result =  single <| fun t -> t.TestSingle n1 |> t.Lt 2 "should < {max}"
     Assert.AreEqual (result, Ok(n1))
     let result =  single <| fun t -> t.TestSingle n1 |> t.Lt 0 "should < 0"
     Assert.AreEqual (result, Error(["should < 0"]))
 
     let result =  single <| fun t -> t.TestSingle n1 |> t.Gte 0 "should >= 0"
     Assert.AreEqual (result, Ok(n1))
-    let result =  single <| fun t -> t.TestSingle n1 |> t.Gte 1 "should >= 1"
+    let result =  single <| fun t -> t.TestSingle n1 |> t.Gte 1 "should >= {min}"
     Assert.AreEqual (result, Ok(n1))
     let result =  single <| fun t -> t.TestSingle n1 |> t.Gt 2 "should >= 2"
     Assert.AreEqual (result, Error(["should >= 2"]))
-    let result =  single <| fun t -> t.TestSingle n1 |> t.Lte 2 "should <= 2"
+    let result =  single <| fun t -> t.TestSingle n1 |> t.Lte 2 "should <= {max}"
     Assert.AreEqual (result, Ok(n1))
     let result =  single <| fun t -> t.TestSingle n1 |> t.Lte 1 "should <= 1"
     Assert.AreEqual (result, Ok(n1))
@@ -128,13 +128,13 @@ describe "test rules" <| fun () ->
     Assert.AreEqual (result, Ok(str))
     let result =  single <| fun t -> t.TestSingle str |> t.MinLen 4 minLen4
     Assert.AreEqual (result, Ok(str))
-    let result =  single <| fun t -> t.TestSingle str |> t.MinLen 6 minLen6
+    let result =  single <| fun t -> t.TestSingle str |> t.MinLen 6 "should min len {len}"
     Assert.AreEqual (result, Error([minLen6]))
 
     let maxLen2 = "should max len 2"
     let maxLen4 = "should max len 4"
     let maxLen6 = "should max len 6"
-    let result =  single <| fun t -> t.TestSingle str |> t.MaxLen 2 maxLen2
+    let result =  single <| fun t -> t.TestSingle str |> t.MaxLen 2 "should max len {len}"
     Assert.AreEqual (result, Error([maxLen2]))
     let result =  single <| fun t -> t.TestSingle str |> t.MaxLen 4 maxLen4
     Assert.AreEqual (result, Ok(str))

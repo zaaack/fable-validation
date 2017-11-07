@@ -17,7 +17,7 @@ dotnet add package Fable.Validation
 
 ### Example
 
-`all` is a validate function, it has a parameter to pass a callback with the only argument of a validator instance, you can write your validate rules and return the validation Ok value. `all` means validate all fields, if you want to return early after first error, you can use `fast`, there are also `allAsync`, `fastAsync` for async validate support.
+`all` is a validate function, it has a parameter to pass a callback with the only argument of a validator instance, you can write your validate rules and return the Ok value. `all` means validate all fields, if you want to return early after first error, you can use `fast`, there are also `allAsync`, `fastAsync` for async validate support.
 
 ```F#
 open System
@@ -39,15 +39,15 @@ let result = all <| fun t ->
     { name = t.Test People.Name valid.name // call `t.Test fieldName value` to initialize field state
                 |> t.Trim // pipe the field state to rules
                 |> t.NotBlank "name cannot be blank" // rules can contain params and a generic error message
-                |> t.MaxLen 20 "maxlen is 20"
-                |> t.MinLen 4 "minlen is 4"
+                |> t.MaxLen 20 "maxlen is {len}"
+                |> t.MinLen 4 "minlen is {len}"
                 |> t.End // call `t.End` to unwrap the validated
                          // and transformed value,
                          // you can use the transformed values to create a new model
 
       age = t.Test People.Age valid.age
-                |> t.Gt 0 "cannot less then or equal 0"
-                |> t.Lt 200 "cannot greater then or equal 200"
+                |> t.Gt 0 "cannot less then or equal {min}"
+                |> t.Lt 200 "cannot greater then or equal {max}"
                 |> t.End }
 
 Assert.AreEqual (result, Ok(valid))

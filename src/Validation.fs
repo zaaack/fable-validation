@@ -151,22 +151,52 @@ and Validator<'E>(all) =
     member __.ToAsync<'T> (input: FieldInfo<'T, 'E>) =
         async { return input }
 
-    member x.Gt (min: 'a) err =
+    /// Greater then a value, if err is a string, it can contains `{min}` to reuse first param
+    member x.Gt (min: 'a) (err : 'E) =
+        let err =
+            match (err :> obj) with
+            | :? string as strErr -> strErr.Replace("{min}", min.ToString()) :> obj :?> 'E
+            | _ -> err
         x.IsValid (fun input -> input > min) err
 
-    member x.Gte (min: 'a) =
-        x.IsValid (fun input -> input >= min)
+    /// Greater and equal then a value, if err is a string, it can contains `{min}` to reuse first param
+    member x.Gte (min: 'a) (err : 'E) =
+        let err =
+            match (err :> obj) with
+            | :? string as strErr -> strErr.Replace("{min}", min.ToString()) :> obj :?> 'E
+            | _ -> err
+        x.IsValid (fun input -> input >= min) err
 
-    member x.Lt (max: 'a) =
-        (fun input -> input < max) |> x.IsValid
+    /// Less then a value, if err is a string, it can contains `{max}` to reuse first param
+    member x.Lt (max: 'a) (err : 'E) =
+        let err =
+            match (err :> obj) with
+            | :? string as strErr -> strErr.Replace("{max}", max.ToString()) :> obj :?> 'E
+            | _ -> err
+        x.IsValid (fun input -> input < max) err
 
-    member x.Lte (max: 'a) =
-        (fun input -> input <= max) |> x.IsValid
+    /// Less and equal then a value, if err is a string, it can contains `{max}` to reuse first param
+    member x.Lte (max: 'a) (err : 'E) =
+        let err =
+            match (err :> obj) with
+            | :? string as strErr -> strErr.Replace("{max}", max.ToString()) :> obj :?> 'E
+            | _ -> err
+        x.IsValid (fun input -> input <= max) err
 
+    /// Max length, if err is a string, it can contains `{len}` to reuse first param
     member x.MaxLen len err (input: FieldInfo<'T, 'E>) =
+        let err =
+            match (err :> obj) with
+            | :? string as strErr -> strErr.Replace("{len}", len.ToString()) :> obj :?> 'E
+            | _ -> err
         x.IsValid (fun input -> Seq.length input <= len) err input
 
+    /// Min length, if err is a string, it can contains `{len}` to reuse first param
     member x.MinLen len err (input: FieldInfo<'T, 'E>) =
+        let err =
+            match (err :> obj) with
+            | :? string as strErr -> strErr.Replace("{len}", len.ToString()) :> obj :?> 'E
+            | _ -> err
         x.IsValid (fun input -> Seq.length input >= len) err input
 
     member x.Enum<'T, 'E when 'T: equality> (enums: 'T list) =
@@ -192,16 +222,16 @@ and Validator<'E>(all) =
 
 let private instance<'E> = Validator<'E>(true)
 
-/// IsValid helper from Validator method for custom rule functions, you can also extends Validator class directly.
+/// IsValid helper from Validator method for custom rule functions, you can also extend Validator class directly.
 let IsValid<'T, 'E> = instance<'E>.IsValid<'T>
 
-/// IsValidOpt helper from Validator method for custom rule functions, you can also extends Validator class directly.
+/// IsValidOpt helper from Validator method for custom rule functions, you can also extend Validator class directly.
 let IsValidOpt<'T, 'T0, 'E> = instance<'E>.IsValidOpt<'T, 'T0>
 
-/// IsValidAsync helper from Validator method for custom rule functions, you can also extends Validator class directly.
+/// IsValidAsync helper from Validator method for custom rule functions, you can also extend Validator class directly.
 let IsValidAsync<'T, 'E> = instance<'E>.IsValidAsync<'T>
 
-/// IsValidOptAsync helper from Validator method for custom rule functions, you can also extends Validator class directly.
+/// IsValidOptAsync helper from Validator method for custom rule functions, you can also extend Validator class directly.
 let IsValidOptAsync<'T, 'T0, 'E> = instance<'E>.IsValidOptAsync<'T, 'T0>
 
 let validateSync all (tester: Validator<'E> -> 'T) =
