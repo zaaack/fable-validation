@@ -1,3 +1,6 @@
+#### 0.1.2
+* Add error template feature for Gt/Gte/Lt/Lte/MaxLen/MinLen
+
 #### 0.1.1
 * Add more docs
 * Refactor `t.EndTest` to `t.End`
