@@ -34,7 +34,7 @@ and Validator<'E>(all) =
     member x.TestAsync<'T> name (value: 'T) =
         async { return x.Test name value }
 
-    member x.TestSingle value =
+    member x.TestSingle (value: 'T) =
         x.Test singleKey value
 
     member __.End (input: FieldInfo<'T, 'E>) =
@@ -101,7 +101,7 @@ and Validator<'E>(all) =
 
     /// Skip following rules if the option value is None
     /// it won't collect error
-    member __.SkipNone input =
+    member __.SkipNone (input: FieldInfo<'T option, 'E>) =
         match input with
         | Some (key, value, vali) ->
             match value with
@@ -116,7 +116,7 @@ and Validator<'E>(all) =
 
     // Skip following rules if the Result value is an Error
     // it won't collect error
-    member __.SkipError input =
+    member __.SkipError (input: FieldInfo<Result<'T, 'TError>, 'E>) =
         match input with
         | Some (key, value, vali) ->
             match value with
@@ -143,7 +143,7 @@ and Validator<'E>(all) =
                 try fn t |> Valid
                 with
                 | exn ->
-                    printfn "Validation Map error: fn: %A value: %A exn: %A" fn t exn
+                    printfn "Validation Map error: fn: %A value: %A exn: %s %s" fn t exn.Message exn.StackTrace
                     Invalid
         )
 
@@ -151,23 +151,23 @@ and Validator<'E>(all) =
     member __.ToAsync<'T> (input: FieldInfo<'T, 'E>) =
         async { return input }
 
-    member x.Gt min err =
+    member x.Gt (min: 'a) err =
         x.IsValid (fun input -> input > min) err
 
-    member x.Gte min =
+    member x.Gte (min: 'a) =
         x.IsValid (fun input -> input >= min)
 
-    member x.Lt max =
+    member x.Lt (max: 'a) =
         (fun input -> input < max) |> x.IsValid
 
-    member x.Lte max =
+    member x.Lte (max: 'a) =
         (fun input -> input <= max) |> x.IsValid
 
-    member x.MaxLen len =
-        (fun input -> Seq.length input <= len) |> x.IsValid
+    member x.MaxLen len err (input: FieldInfo<'T, 'E>) =
+        x.IsValid (fun input -> Seq.length input <= len) err input
 
-    member x.MinLen len =
-        (fun input -> Seq.length input >= len) |> x.IsValid
+    member x.MinLen len err (input: FieldInfo<'T, 'E>) =
+        x.IsValid (fun input -> Seq.length input >= len) err input
 
     member x.Enum<'T, 'E when 'T: equality> (enums: 'T list) =
         (fun input -> enums |> List.contains input) |> x.IsValid<'T>

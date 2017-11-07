@@ -5,7 +5,7 @@
 
 ## Install
 ```sh
-paket install Fable.Validation
+paket add Fable.Validation
 ```
 OR
 
@@ -15,6 +15,9 @@ dotnet add package Fable.Validation
 
 ## Usage
 
+### Example
+
+`all` is a validate function, it has a parameter to pass a callback with the only argument of a validator instance, you can write your validate rules and return the validation Ok value. `all` means validate all fields, if you want to return early after first error, you can use `fast`, there are also `allAsync`, `fastAsync` for async validate support.
 
 ```F#
 open System
@@ -31,14 +34,16 @@ type People = {
     static member Age = "age"
 
 let valid = { name="abcd"; age=10 }
-let result = all <| fun t -> // validate all fields, if you want to return early after first error, you can use `fast`, there are also `allAsync`, `fastAsync` for async validate support
+let result = all <| fun t ->
 
-    { name = t.Test People.Name valid.name // call `t.Test fieldName value` to initialize state
-                |> t.Trim // pipe the field state to validate rules
-                |> t.NotBlank "name cannot be blank" // some rules could contain a generic error message
+    { name = t.Test People.Name valid.name // call `t.Test fieldName value` to initialize field state
+                |> t.Trim // pipe the field state to rules
+                |> t.NotBlank "name cannot be blank" // rules can contain params and a generic error message
                 |> t.MaxLen 20 "maxlen is 20"
                 |> t.MinLen 4 "minlen is 4"
-                |> t.End // call `t.End` to unwrap the validated and transformed value, you can use the transformed values to create a new model
+                |> t.End // call `t.End` to unwrap the validated
+                         // and transformed value,
+                         // you can use the transformed values to create a new model
 
       age = t.Test People.Age valid.age
                 |> t.Gt 0 "cannot less then or equal 0"
@@ -47,7 +52,8 @@ let result = all <| fun t -> // validate all fields, if you want to return early
 
 Assert.AreEqual (result, Ok(valid))
 
-let result = all <| fun t ->
+// the result type is Result<'T, 'E list>
+let result: Result<People, string list> = all <| fun t ->
 
     { name = t.Test People.Name "abc"
                 |> t.MaxLen 20 "maxlen is 20"
@@ -93,11 +99,39 @@ async {
 // result is Ok(transformed input value) or Error(error list)
 // test single value don't need call `t.End`, because it will return as result.
 let result: Result<string, string list> = single <| fun t ->
-    t.TestSingle "Some Input" |> t.MinLen 10 "minlen is 10" 
+    t.TestSingle "Some Input" |> t.MinLen 10 "minlen is 10"
 
 ```
 
-## [API Reference](https://zaaack.github.io/fable-validation)
+### option/Result support
+
+This library comes with option/Result support in mind, you can unwrap it by validate rules like IsSome/IsOK, or skip following validation it if it's None/Error (in this case it will return an empty error message)
+
+```F#
+let result: Result<string, string list> = single <| fun t ->
+    t.TestSingle (Some 1) |> t.IsSome  "should be some" |> t.Gt 0 "should greater then 0"
+
+let result: Result<string, string list> = single <| fun t ->
+    t.TestSingle None |> t.skipNone  "should be some" |> t.Gt 0 "should greater then 0"
+```
+
+### Map/To
+
+It's very easy to transform the input value to another type:
+
+* `t.Map` Lift the input value's type, it shouldn't throw error
+* `t.To` Parse the input value to another type, it could throw error.
+
+```F#
+let result: Result<int option, string list> =
+    single (fun t -> t.TestSingle 1 |> t.Map Some)
+
+let result: Result<int, string list> =
+    single (fun t -> t.TestSingle "123" |> t.To int "cann't parse to int")
+```
+
+For more you can see [API Reference](https://zaaack.github.io/fable-validation).
 
 ## License
+
 MIT

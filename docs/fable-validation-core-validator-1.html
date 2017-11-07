@@ -140,7 +140,7 @@
             Gt(min err)
           </code>
           <div class="tip" id="24">
-            <strong>Signature:</strong> min:&#39;?7849 -&gt; err:&#39;E -&gt; FieldInfo&lt;&#39;?7849,&#39;E&gt; -&gt; (string * &#39;?7849 * Validator&lt;&#39;E&gt;) option<br />
+            <strong>Signature:</strong> min:&#39;a -&gt; err:&#39;E -&gt; FieldInfo&lt;&#39;a,&#39;E&gt; -&gt; (string * &#39;a * Validator&lt;&#39;E&gt;) option<br />
                       </div>
         </td>
         <td class="xmldoc">
@@ -155,7 +155,7 @@
             Gte(min)
           </code>
           <div class="tip" id="25">
-            <strong>Signature:</strong> min:&#39;?7852 -&gt; &#39;E -&gt; FieldInfo&lt;&#39;?7852,&#39;E&gt; -&gt; (string * &#39;?7852 * Validator&lt;&#39;E&gt;) option<br />
+            <strong>Signature:</strong> min:&#39;a -&gt; &#39;E -&gt; FieldInfo&lt;&#39;a,&#39;E&gt; -&gt; (string * &#39;a * Validator&lt;&#39;E&gt;) option<br />
                       </div>
         </td>
         <td class="xmldoc">
@@ -331,7 +331,7 @@ it will collect error</p>
             Lt(max)
           </code>
           <div class="tip" id="36">
-            <strong>Signature:</strong> max:&#39;?7855 -&gt; &#39;E -&gt; FieldInfo&lt;&#39;?7855,&#39;E&gt; -&gt; (string * &#39;?7855 * Validator&lt;&#39;E&gt;) option<br />
+            <strong>Signature:</strong> max:&#39;a -&gt; &#39;E -&gt; FieldInfo&lt;&#39;a,&#39;E&gt; -&gt; (string * &#39;a * Validator&lt;&#39;E&gt;) option<br />
                       </div>
         </td>
         <td class="xmldoc">
@@ -346,7 +346,7 @@ it will collect error</p>
             Lte(max)
           </code>
           <div class="tip" id="37">
-            <strong>Signature:</strong> max:&#39;?7858 -&gt; &#39;E -&gt; FieldInfo&lt;&#39;?7858,&#39;E&gt; -&gt; (string * &#39;?7858 * Validator&lt;&#39;E&gt;) option<br />
+            <strong>Signature:</strong> max:&#39;a -&gt; &#39;E -&gt; FieldInfo&lt;&#39;a,&#39;E&gt; -&gt; (string * &#39;a * Validator&lt;&#39;E&gt;) option<br />
                       </div>
         </td>
         <td class="xmldoc">
@@ -376,11 +376,11 @@ fn shouldn't throw error, if it would, please using <code>t.To fn error</code></
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '39', 39)" onmouseover="showTip(event, '39', 39)">
-            MaxLen(len)
+            MaxLen(len err input)
           </code>
           <div class="tip" id="39">
-            <strong>Signature:</strong> len:int -&gt; &#39;E -&gt; FieldInfo&lt;&#39;?7861,&#39;E&gt; -&gt; (string * &#39;?7861 * Validator&lt;&#39;E&gt;) option<br />
-                          <strong>Type parameters:</strong> '?7862          </div>
+            <strong>Signature:</strong> len:int -&gt; err:&#39;E -&gt; input:FieldInfo&lt;&#39;T,&#39;E&gt; -&gt; (string * &#39;T * Validator&lt;&#39;E&gt;) option<br />
+                          <strong>Type parameters:</strong> '?7860          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L166-166" class="github-link" target="_blank">[src]</a>
@@ -391,11 +391,11 @@ fn shouldn't throw error, if it would, please using <code>t.To fn error</code></
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '40', 40)" onmouseover="showTip(event, '40', 40)">
-            MinLen(len)
+            MinLen(len err input)
           </code>
           <div class="tip" id="40">
-            <strong>Signature:</strong> len:int -&gt; &#39;E -&gt; FieldInfo&lt;&#39;?7865,&#39;E&gt; -&gt; (string * &#39;?7865 * Validator&lt;&#39;E&gt;) option<br />
-                          <strong>Type parameters:</strong> '?7866          </div>
+            <strong>Signature:</strong> len:int -&gt; err:&#39;E -&gt; input:FieldInfo&lt;&#39;T,&#39;E&gt; -&gt; (string * &#39;T * Validator&lt;&#39;E&gt;) option<br />
+                          <strong>Type parameters:</strong> '?7864          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L169-169" class="github-link" target="_blank">[src]</a>
@@ -442,8 +442,8 @@ fn shouldn't throw error, if it would, please using <code>t.To fn error</code></
             SkipError(input)
           </code>
           <div class="tip" id="43">
-            <strong>Signature:</strong> (input:(&#39;?7828 * Result&lt;&#39;?7829,&#39;?7830&gt; * &#39;?7831) option) -&gt; (&#39;?7828 * &#39;?7829 * &#39;?7831) option<br />
-                          <strong>Type parameters:</strong> '?7829, '?7830, '?7831          </div>
+            <strong>Signature:</strong> input:FieldInfo&lt;Result&lt;&#39;T,&#39;TError&gt;,&#39;E&gt; -&gt; (string * &#39;T * Validator&lt;&#39;E&gt;) option<br />
+                          <strong>Type parameters:</strong> 'TError          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L119-119" class="github-link" target="_blank">[src]</a>
@@ -457,8 +457,8 @@ fn shouldn't throw error, if it would, please using <code>t.To fn error</code></
             SkipNone(input)
           </code>
           <div class="tip" id="44">
-            <strong>Signature:</strong> (input:(&#39;?7820 * &#39;?7821 option * &#39;?7822) option) -&gt; (&#39;?7820 * &#39;?7821 * &#39;?7822) option<br />
-                          <strong>Type parameters:</strong> '?7821, '?7822          </div>
+            <strong>Signature:</strong> (input:FieldInfo&lt;&#39;T option,&#39;E&gt;) -&gt; (string * &#39;T * Validator&lt;&#39;E&gt;) option<br />
+                      </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L104-104" class="github-link" target="_blank">[src]</a>
@@ -505,7 +505,7 @@ it won't collect error</p>
             TestSingle(value)
           </code>
           <div class="tip" id="47">
-            <strong>Signature:</strong> value:&#39;?7792 -&gt; (string * &#39;?7792 * Validator&lt;&#39;E&gt;) option<br />
+            <strong>Signature:</strong> value:&#39;T -&gt; (string * &#39;T * Validator&lt;&#39;E&gt;) option<br />
                       </div>
         </td>
         <td class="xmldoc">
