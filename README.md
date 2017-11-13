@@ -46,8 +46,8 @@ let result = all <| fun t ->
                          // you can use the transformed values to create a new model
 
       age = t.Test People.Age valid.age
-                |> t.Gt 0 "cannot less then or equal {min}"
-                |> t.Lt 200 "cannot greater then or equal {max}"
+                |> t.Gt 0 "should greater then {min}"
+                |> t.Lt 200 "shoudld less then {max}"
                 |> t.End }
 
 Assert.AreEqual (result, Ok(valid))
@@ -60,12 +60,12 @@ let result: Result<People, string list> = all <| fun t ->
                 |> t.MinLen 4 "minlen is 4"
                 |> t.End
       age = t.Test People.Age 201
-                |> t.Gt 0 "cannot less then or equal 0"
-                |> t.Lt 200 "cannot greater then or equal 200"
+                |> t.Gt 0 "should greater then 0"
+                |> t.Lt 200 "should less then 200"
                 |> t.End }
 
 Assert.AreEqual (result, Error(Map [ People.Name, ["minlen is 4"]
-                                     People.Age, ["cannot greater then or equal 200"] ]))
+                                     People.Age, ["should less then 200"] ]))
 
 // async validate example
 
@@ -86,8 +86,8 @@ async {
 
             return { name = name
                      age = t.Test People.Age valid.age
-                            |> t.Gt 0 "cannot less then or equal 0"
-                            |> t.Lt 200 "cannot greater then or equal 200"
+                            |> t.Gt 0 "shoud greater then 0"
+                            |> t.Lt 200 "should less then 200"
                             |> t.End }
         }
 
@@ -105,14 +105,14 @@ let result: Result<string, string list> = single <| fun t ->
 
 ### option/Result support
 
-This library comes with option/Result support in mind, you can unwrap it by validate rules like IsSome/IsOK, or skip following validation it if it's None/Error (in this case it will return an empty error message)
+This library comes with option/Result support in mind, you can unwrap it by validate rules like IsSome/IsOK, or skip following validation it if it's None/Error (in this case it will return `Ok(Unchecked.defaultof<'T>)`, which is always null in Fable, but can be 0 if 'T is int in F#).
 
 ```F#
 let result: Result<string, string list> = single <| fun t ->
     t.TestSingle (Some 1) |> t.IsSome  "should be some" |> t.Gt 0 "should greater then 0"
 
 let result: Result<string, string list> = single <| fun t ->
-    t.TestSingle None |> t.skipNone  "should be some" |> t.Gt 0 "should greater then 0"
+    t.TestSingle None |> t.skipNone 1 |> t.Gt 0 "should greater then 0"
 ```
 
 ### Map/To

@@ -1,6 +1,7 @@
 module Fable.Validation.Tests
 
 open System
+open System.Text.RegularExpressions
 open Fable.Core
 open Fable.Core.JsInterop
 open Fable.Core.Testing
@@ -61,7 +62,12 @@ describe "test rules" <| fun () ->
   it "should SkipError work" <| fun () ->
     let err: Result<int, int> = Error(2)
     let result =  single <| fun t -> t.TestSingle err |> t.SkipError |> t.Gt 0 "Should > 0"
-    Assert.AreEqual (result, Error([]))
+    Assert.AreEqual (result, Ok(null :> obj :?> int))
+
+  it "should DefaultOfError work" <| fun () ->
+    let err: Result<int, int> = Error(2)
+    let result =  single <| fun t -> t.TestSingle err |> t.DefaultOfError 1 |> t.Gt 0 "Should > 0"
+    Assert.AreEqual (result, Ok(1))
 
 
   it "should IsSome work" <| fun () ->
@@ -75,7 +81,16 @@ describe "test rules" <| fun () ->
   it "should SkipNone work" <| fun () ->
     let none: int option = None
     let result =  single <| fun t -> t.TestSingle none |> t.SkipNone |> t.Gt 0 "should > 0"
-    Assert.AreEqual (result, Error([]))
+    // Unchecked.defaultof<'T> is always null in Fable
+    // but it will be 0 when 'T is int in F#
+    // Warnning: `Ok(null :> obj :?> int)` will throw runtime error in F#
+    Assert.AreEqual (result, Ok(null :> obj :?> int))
+
+
+  it "should DefaultOfNone work" <| fun () ->
+    let none: int option = None
+    let result =  single <| fun t -> t.TestSingle none |> t.DefaultOfNone 1 |> t.Gt 0 "should > 0"
+    Assert.AreEqual (result, Ok(1))
 
   it "should Gt/Gte/Lt/Lte work" <| fun () ->
     let n1 = 1
@@ -140,6 +155,15 @@ describe "test rules" <| fun () ->
     Assert.AreEqual (result, Ok(str))
     let result =  single <| fun t -> t.TestSingle str |> t.MaxLen 6 maxLen6
     Assert.AreEqual (result, Ok(str))
+
+  it "should match work" <| fun () ->
+    let valid = "123"
+    let invalid = "abc"
+    let msg = "should match number"
+    let result =  single <| fun t -> t.TestSingle valid |> t.Match (Regex ("^\d+$", RegexOptions.ECMAScript)) msg
+    Assert.AreEqual (result, Ok(valid))
+    let result =  single <| fun t -> t.TestSingle invalid |> t.Match (Regex ("^\d+$", RegexOptions.ECMAScript)) msg
+    Assert.AreEqual (result, Error([msg]))
 
   it "should url work" <| fun () ->
     let valid = "https://www.google.com"
@@ -236,9 +260,9 @@ describe "test all" <| fun () ->
   itAsync "should async work" <| fun () ->
     promise {
         let valid = { name = " abcd "; age = 10 }
-        let testNameAsync =
-            IsValidOptAsync<string, string, string> <| fun name ->
-                async { return Valid (name.Trim()) }
+        let testNameAsync err =
+            isValidOptAsync (fun (name: string) ->
+                async { return Valid (name.Trim()) }) err
 
         let asyncResult = fastAsync <| fun t ->
             async {

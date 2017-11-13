@@ -1,3 +1,7 @@
+#### 0.1.3
+* Fix SkipNone/SkipError
+* Add DefaultsOfError/DefaultsOfNone
+
 #### 0.1.2
 * Add error template feature for Gt/Gte/Lt/Lte/MaxLen/MinLen
 

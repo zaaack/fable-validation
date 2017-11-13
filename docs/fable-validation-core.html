@@ -52,19 +52,13 @@
     <tbody>
         <tr>
           <td class="type-name">
-            <a href="fable-validation-core-fieldinfo-2.html">FieldInfo<'T, 'E></a>
+            <a href="fable-validation-core-fieldinfo-3.html">FieldInfo<'T, 'T0, 'E></a>
           </td>
           <td class="xmldoc"></td>
         </tr>
         <tr>
           <td class="type-name">
             <a href="fable-validation-core-validateresult-1.html">ValidateResult<'T></a>
-          </td>
-          <td class="xmldoc"></td>
-        </tr>
-        <tr>
-          <td class="type-name">
-            <a href="fable-validation-core-validator-1.html">Validator<'E></a>
           </td>
           <td class="xmldoc"></td>
         </tr>
@@ -90,7 +84,7 @@
                           <strong>Type parameters:</strong> 'E, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L256-256" class="github-link" target="_blank">[src]</a>
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L296-296" class="github-link" target="_blank">[src]</a>
           <p>validate all fields and return a custom type,</p>
 
 
@@ -107,7 +101,7 @@
                           <strong>Type parameters:</strong> 'E, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L261-261" class="github-link" target="_blank">[src]</a>
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L301-301" class="github-link" target="_blank">[src]</a>
           
         </td>
       </tr>
@@ -122,7 +116,7 @@
                           <strong>Type parameters:</strong> 'E, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L259-259" class="github-link" target="_blank">[src]</a>
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L299-299" class="github-link" target="_blank">[src]</a>
           <p>Exit after first error occurred and return a custom type</p>
 
 
@@ -139,7 +133,7 @@
                           <strong>Type parameters:</strong> 'E, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L263-263" class="github-link" target="_blank">[src]</a>
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L303-303" class="github-link" target="_blank">[src]</a>
           
         </td>
       </tr>
@@ -147,14 +141,14 @@
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '5', 5)" onmouseover="showTip(event, '5', 5)">
-            IsValid 
+            isValid 
           </code>
           <div class="tip" id="5">
-            <strong>Signature:</strong> (&#39;T -&gt; bool) -&gt; &#39;E -&gt; FieldInfo&lt;&#39;T,&#39;E&gt; -&gt; (string * &#39;T * Validator&lt;&#39;E&gt;) option<br />
-                          <strong>Type parameters:</strong> 'T, 'E          </div>
+            <strong>Signature:</strong> (&#39;T0 -&gt; bool) -&gt; &#39;E -&gt; FieldInfo&lt;&#39;T,&#39;T0,&#39;E&gt; -&gt; FieldInfo&lt;&#39;T,&#39;T0,&#39;E&gt;<br />
+                          <strong>Type parameters:</strong> 'T, 'T0, 'E          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L226-226" class="github-link" target="_blank">[src]</a>
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L266-266" class="github-link" target="_blank">[src]</a>
           <p>IsValid helper from Validator method for custom rule functions, you can also extend Validator class directly.</p>
 
 
@@ -164,14 +158,14 @@
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '6', 6)" onmouseover="showTip(event, '6', 6)">
-            IsValidAsync 
+            isValidAsync 
           </code>
           <div class="tip" id="6">
-            <strong>Signature:</strong> (&#39;T -&gt; Async&lt;bool&gt;) -&gt; &#39;E -&gt; Async&lt;FieldInfo&lt;&#39;T,&#39;E&gt;&gt; -&gt; Async&lt;(string * &#39;T * Validator&lt;&#39;E&gt;) option&gt;<br />
-                          <strong>Type parameters:</strong> 'T, 'E          </div>
+            <strong>Signature:</strong> (&#39;T -&gt; Async&lt;bool&gt;) -&gt; &#39;E -&gt; Async&lt;FieldInfo&lt;&#39;T0,&#39;T,&#39;E&gt;&gt; -&gt; Async&lt;FieldInfo&lt;&#39;T0,&#39;T,&#39;E&gt;&gt;<br />
+                          <strong>Type parameters:</strong> 'T, 'T0, 'E          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L232-232" class="github-link" target="_blank">[src]</a>
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L272-272" class="github-link" target="_blank">[src]</a>
           <p>IsValidAsync helper from Validator method for custom rule functions, you can also extend Validator class directly.</p>
 
 
@@ -181,14 +175,14 @@
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '7', 7)" onmouseover="showTip(event, '7', 7)">
-            IsValidOpt 
+            isValidOpt 
           </code>
           <div class="tip" id="7">
-            <strong>Signature:</strong> (&#39;T -&gt; ValidateResult&lt;&#39;T0&gt;) -&gt; &#39;E -&gt; FieldInfo&lt;&#39;T,&#39;E&gt; -&gt; (string * &#39;T0 * Validator&lt;&#39;E&gt;) option<br />
-                          <strong>Type parameters:</strong> 'T, 'T0, 'E          </div>
+            <strong>Signature:</strong> (&#39;T0 -&gt; ValidateResult&lt;&#39;T1&gt;) -&gt; &#39;E -&gt; FieldInfo&lt;&#39;T,&#39;T0,&#39;E&gt; -&gt; FieldInfo&lt;&#39;T,&#39;T1,&#39;E&gt;<br />
+                          <strong>Type parameters:</strong> 'T, 'T0, 'T1, 'E          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L229-229" class="github-link" target="_blank">[src]</a>
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L269-269" class="github-link" target="_blank">[src]</a>
           <p>IsValidOpt helper from Validator method for custom rule functions, you can also extend Validator class directly.</p>
 
 
@@ -198,14 +192,14 @@
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '8', 8)" onmouseover="showTip(event, '8', 8)">
-            IsValidOptAsync 
+            isValidOptAsync 
           </code>
           <div class="tip" id="8">
-            <strong>Signature:</strong> (&#39;T -&gt; Async&lt;ValidateResult&lt;&#39;T0&gt;&gt;) -&gt; &#39;E -&gt; Async&lt;FieldInfo&lt;&#39;T,&#39;E&gt;&gt; -&gt; Async&lt;(string * &#39;T0 * Validator&lt;&#39;E&gt;) option&gt;<br />
-                          <strong>Type parameters:</strong> 'T, 'T0, 'E          </div>
+            <strong>Signature:</strong> (&#39;T0 -&gt; Async&lt;ValidateResult&lt;&#39;T1&gt;&gt;) -&gt; &#39;E -&gt; Async&lt;FieldInfo&lt;&#39;T,&#39;T0,&#39;E&gt;&gt; -&gt; Async&lt;FieldInfo&lt;&#39;T,&#39;T1,&#39;E&gt;&gt;<br />
+                          <strong>Type parameters:</strong> 'T, 'T0, 'T1, 'E          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L235-235" class="github-link" target="_blank">[src]</a>
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L275-275" class="github-link" target="_blank">[src]</a>
           <p>IsValidOptAsync helper from Validator method for custom rule functions, you can also extend Validator class directly.</p>
 
 
@@ -218,11 +212,11 @@
             single tester
           </code>
           <div class="tip" id="9">
-            <strong>Signature:</strong> tester:(Validator&lt;&#39;E&gt; -&gt; FieldInfo&lt;&#39;T,&#39;E&gt;) -&gt; Result&lt;&#39;T,&#39;E list&gt;<br />
-                          <strong>Type parameters:</strong> 'E, 'T          </div>
+            <strong>Signature:</strong> tester:(Validator&lt;&#39;E&gt; -&gt; FieldInfo&lt;&#39;T,&#39;T0,&#39;E&gt;) -&gt; Result&lt;&#39;T0,&#39;E list&gt;<br />
+                          <strong>Type parameters:</strong> 'E, 'T, 'T0          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L266-266" class="github-link" target="_blank">[src]</a>
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L309-309" class="github-link" target="_blank">[src]</a>
           <p>Validate single value</p>
 
 
@@ -235,11 +229,11 @@
             singleAsync tester
           </code>
           <div class="tip" id="10">
-            <strong>Signature:</strong> tester:(Validator&lt;&#39;E&gt; -&gt; Async&lt;FieldInfo&lt;&#39;T,&#39;E&gt;&gt;) -&gt; Async&lt;Result&lt;&#39;T,&#39;E list&gt;&gt;<br />
-                          <strong>Type parameters:</strong> 'E, 'T          </div>
+            <strong>Signature:</strong> tester:(Validator&lt;&#39;E&gt; -&gt; Async&lt;FieldInfo&lt;&#39;T,&#39;T0,&#39;E&gt;&gt;) -&gt; Async&lt;Result&lt;&#39;T0,&#39;E list&gt;&gt;<br />
+                          <strong>Type parameters:</strong> 'E, 'T, 'T0          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L274-274" class="github-link" target="_blank">[src]</a>
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L320-320" class="github-link" target="_blank">[src]</a>
           <p>Validate single value asynchronize</p>
 
 
@@ -256,7 +250,7 @@
                           <strong>Type parameters:</strong> 'E, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L245-245" class="github-link" target="_blank">[src]</a>
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L285-285" class="github-link" target="_blank">[src]</a>
           
         </td>
       </tr>
@@ -271,7 +265,7 @@
                           <strong>Type parameters:</strong> 'E, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L237-237" class="github-link" target="_blank">[src]</a>
+            <a href="https://github.com/zaaack/fable-validation/tree/master/src/Validation.fs#L277-277" class="github-link" target="_blank">[src]</a>
           
         </td>
       </tr>
