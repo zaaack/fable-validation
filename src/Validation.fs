@@ -3,12 +3,6 @@ module Fable.Validation.Core
 open System
 open System.Text.RegularExpressions
 
-#if FABLE_COMPILER
-
-open Fable.Core
-
-#endif
-
 let private singleKey = "s"
 
 module ValidateRegexes =
@@ -58,17 +52,11 @@ and Validator<'E>(all) =
     member x.TestSingle (value: 'T0) =
         x.Test singleKey value
 
-#if FABLE_COMPILER
-    [<PassGenerics>]
-#endif
     member __.End<'T, 'T0> (input: FieldInfo<'T, 'T0, 'E>) =
         match input.result with
         | Valid value -> value
         | _ -> Unchecked.defaultof<'T0>
 
-#if FABLE_COMPILER
-    [<PassGenerics>]
-#endif
     member x.EndAsync (input: Async<FieldInfo<'T, 'T0, 'E>>) =
         async {
             let! input = input
@@ -122,9 +110,6 @@ and Validator<'E>(all) =
 
     /// Test an option value is some and unwrap it
     /// it will collect error
-#if FABLE_COMPILER
-    [<PassGenerics>]
-#endif
     member x.IsSome error =
         x.IsValid<'T, 'T0 option> (fun t -> t.IsSome) error >> x.SkipNone
 
@@ -145,9 +130,6 @@ and Validator<'E>(all) =
 
     /// Test a Result value is Ok and unwrap it
     /// it will collect error
-#if FABLE_COMPILER
-    [<PassGenerics>]
-#endif
     member x.IsOk<'T, 'T0, 'TError> error =
         let isOk = fun t -> match t with Ok _ -> true | Error _ -> false
         x.IsValid<'T, Result<'T0, 'TError>> isOk error >> x.SkipError
@@ -303,9 +285,6 @@ let inline allAsync (tester: Validator<'E> -> Async<'T>) = validateAsync true te
 let inline fastAsync (tester: Validator<'E> -> Async<'T>) = validateAsync false tester
 
 /// Validate single value
-#if FABLE_COMPILER
-[<PassGenerics>]
-#endif
 let single (tester: Validator<'E> -> FieldInfo<'T, 'T0, 'E>)  =
     let t = Validator(true)
     let ret = tester t |> t.End
@@ -314,9 +293,6 @@ let single (tester: Validator<'E> -> FieldInfo<'T, 'T0, 'E>)  =
     else Ok ret
 
 /// Validate single value asynchronize
-#if FABLE_COMPILER
-[<PassGenerics>]
-#endif
 let singleAsync (tester: Validator<'E> -> Async<FieldInfo<'T, 'T0, 'E>>) =
     async {
         let t = Validator(true)
