@@ -1,3 +1,4 @@
+open System.Reflection
 #load "../packages/build/FSharp.Formatting/FSharp.Formatting.fsx"
 #I "../packages/build/FAKE/tools/"
 #r "FakeLib.dll"
@@ -58,8 +59,16 @@ let buildReferences () =
         let outputFolder = output
         ensureDirectory outputFolder
         let libDirs = [
-          dllFile |> directory
+            dllFile |> directory |> Path.GetFullPath
+            @"/Users/z/Projects/Fable/fable-validation/src/bin"
         ]
+
+        let refs =
+            Assembly.LoadFile(dllFile).GetReferencedAssemblies()
+            |> Array.map (fun a -> Assembly.Load(a.Name).Location |> directory)
+            |> Array.toList
+        printfn "refs: %A" (refs)
+        printfn "libDirs:%A" libDirs
         let () = MetadataFormat.Generate (
                     dllFile,
                     outputFolder,
@@ -70,7 +79,7 @@ let buildReferences () =
                     sourceRepo = githubLink @@ "tree/master/",
                     moduleTemplate = __SOURCE_DIRECTORY__ @@ "templates/module.cshtml",
                     sourceFolder = root,
-                    publicOnly = true, libDirs = libDirs)
+                    publicOnly = true, libDirs = libDirs @ refs)
         ()
       }
   )
