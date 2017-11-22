@@ -99,7 +99,7 @@ async {
 // result is Ok(transformed input value) or Error(error list)
 // test single value don't need call `t.End`, because it will return as result.
 let result: Result<string, string list> = single <| fun t ->
-    t.TestOne "Some Input" |> t.MinLen 10 "minlen is 10"
+    t.TestOne "Some Input" |> t.MinLen 10 "minlen is 10" |> t.End
 
 ```
 
