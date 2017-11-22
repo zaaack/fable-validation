@@ -29,108 +29,108 @@ describe "test rules" <| fun () ->
   it "should Trim work" <| fun () ->
     let valid = "aaa"
     let invalid = " aaa  "
-    let result = single <| fun t -> t.TestSingle valid |> t.Trim
+    let result = single <| fun t -> t.TestOne valid |> t.Trim |> t.End
     Assert.AreEqual (result, Ok(valid), "valid is Ok")
-    let result = single <| fun t -> t.TestSingle invalid |> t.Trim
+    let result = single <| fun t -> t.TestOne invalid |> t.Trim |> t.End
     Assert.AreEqual (result, Ok(valid), "Invalid with trim is Ok")
 
   it "should IsBlank work" <| fun () ->
     let valid = "aaa"
     let invalid = "   "
     let msg = "Cannot be blank"
-    let result =  single <| fun t -> t.TestSingle valid |> t.NotBlank msg
+    let result =  single <| fun t -> t.TestOne valid |> t.NotBlank msg |> t.End
     Assert.AreEqual (result, Ok(valid), "1")
-    let result =  single <| fun t -> t.TestSingle invalid |> t.NotBlank msg
+    let result =  single <| fun t -> t.TestOne invalid |> t.NotBlank msg |> t.End
     Assert.AreEqual (result, Error([msg]), "2")
 
   it "should IsBlank and Trim work" <| fun () ->
     let valid = "aaa"
     let invalid = " aaa  "
     let msg = "Cannot be blank"
-    let result =  single <| fun t -> t.TestSingle invalid |> t.Trim |> t.MaxLen 3 msg
+    let result =  single <| fun t -> t.TestOne invalid |> t.Trim |> t.MaxLen 3 msg |> t.End
     Assert.AreEqual (result, Ok(valid))
 
   it "should IsOk work" <| fun () ->
     let ok = Ok(1)
     let okMsg = "should be ok"
     let err = Error(2)
-    let result =  single <| fun t -> t.TestSingle ok |> t.IsOk okMsg
+    let result =  single <| fun t -> t.TestOne ok |> t.IsOk okMsg |> t.End
     Assert.AreEqual (result, ok, "1")
-    let result =  single <| fun t -> t.TestSingle err |> t.IsOk okMsg
+    let result =  single <| fun t -> t.TestOne err |> t.IsOk okMsg
     Assert.AreEqual (result, Error([okMsg]), "2")
 
   it "should SkipError work" <| fun () ->
     let err: Result<int, int> = Error(2)
-    let result =  single <| fun t -> t.TestSingle err |> t.SkipError |> t.Gt 0 "Should > 0"
-    Assert.AreEqual (result, Ok(null :> obj :?> int))
+    let result =  single <| fun t -> t.TestOneOnlyOk err [t.Gt 0 "Should > 0"]
+    Assert.AreEqual (result, Ok(err))
 
   it "should DefaultOfError work" <| fun () ->
     let err: Result<int, int> = Error(2)
-    let result =  single <| fun t -> t.TestSingle err |> t.DefaultOfError 1 |> t.Gt 0 "Should > 0"
+    let result =  single <| fun t -> t.TestOne err |> t.DefaultOfError 1 |> t.Gt 0 "Should > 0" |> t.End
     Assert.AreEqual (result, Ok(1))
 
 
   it "should IsSome work" <| fun () ->
     let some = Some(1)
     let someMsg = "should be some"
-    let result =  single <| fun t -> t.TestSingle some |> t.IsSome someMsg
+    let result =  single <| fun t -> t.TestOne some |> t.IsSome someMsg |> t.End
     Assert.AreEqual (result, Ok(some.Value), "1")
-    let result =  single <| fun t -> t.TestSingle None |> t.IsSome someMsg
+    let result =  single <| fun t -> t.TestOne None |> t.IsSome someMsg |> t.End
     Assert.AreEqual (result, Error([someMsg]), "2")
 
   it "should SkipNone work" <| fun () ->
     let none: int option = None
-    let result =  single <| fun t -> t.TestSingle none |> t.SkipNone |> t.Gt 0 "should > 0"
+    let result =  single <| fun t -> t.TestOneOnlySome none [t.Gt 0 "should > 0"]
     // Unchecked.defaultof<'T> is always null in Fable
     // but it will be 0 when 'T is int in F#
     // Warnning: `Ok(null :> obj :?> int)` will throw runtime error in F#
-    Assert.AreEqual (result, Ok(null :> obj :?> int))
+    Assert.AreEqual (result, Ok(None))
 
 
   it "should DefaultOfNone work" <| fun () ->
     let none: int option = None
-    let result =  single <| fun t -> t.TestSingle none |> t.DefaultOfNone 1 |> t.Gt 0 "should > 0"
+    let result =  single <| fun t -> t.TestOne none |> t.DefaultOfNone 1 |> t.Gt 0 "should > 0" |> t.End
     Assert.AreEqual (result, Ok(1))
 
   it "should Gt/Gte/Lt/Lte work" <| fun () ->
     let n1 = 1
-    let result =  single <| fun t -> t.TestSingle n1 |> t.Gt 0 "should > {min}"
+    let result =  single <| fun t -> t.TestOne n1 |> t.Gt 0 "should > {min}" |> t.End
     Assert.AreEqual (result, Ok(n1))
-    let result =  single <| fun t -> t.TestSingle n1 |> t.Gt 1 "should > 0"
+    let result =  single <| fun t -> t.TestOne n1 |> t.Gt 1 "should > 0" |> t.End
     Assert.AreEqual (result, Error(["should > 0"]))
-    let result =  single <| fun t -> t.TestSingle n1 |> t.Lt 2 "should < {max}"
+    let result =  single <| fun t -> t.TestOne n1 |> t.Lt 2 "should < {max}" |> t.End
     Assert.AreEqual (result, Ok(n1))
-    let result =  single <| fun t -> t.TestSingle n1 |> t.Lt 0 "should < 0"
+    let result =  single <| fun t -> t.TestOne n1 |> t.Lt 0 "should < 0" |> t.End
     Assert.AreEqual (result, Error(["should < 0"]))
 
-    let result =  single <| fun t -> t.TestSingle n1 |> t.Gte 0 "should >= 0"
+    let result =  single <| fun t -> t.TestOne n1 |> t.Gte 0 "should >= 0" |> t.End
     Assert.AreEqual (result, Ok(n1))
-    let result =  single <| fun t -> t.TestSingle n1 |> t.Gte 1 "should >= {min}"
+    let result =  single <| fun t -> t.TestOne n1 |> t.Gte 1 "should >= {min}" |> t.End
     Assert.AreEqual (result, Ok(n1))
-    let result =  single <| fun t -> t.TestSingle n1 |> t.Gt 2 "should >= 2"
+    let result =  single <| fun t -> t.TestOne n1 |> t.Gt 2 "should >= 2" |> t.End
     Assert.AreEqual (result, Error(["should >= 2"]))
-    let result =  single <| fun t -> t.TestSingle n1 |> t.Lte 2 "should <= {max}"
+    let result =  single <| fun t -> t.TestOne n1 |> t.Lte 2 "should <= {max}" |> t.End
     Assert.AreEqual (result, Ok(n1))
-    let result =  single <| fun t -> t.TestSingle n1 |> t.Lte 1 "should <= 1"
+    let result =  single <| fun t -> t.TestOne n1 |> t.Lte 1 "should <= 1" |> t.End
     Assert.AreEqual (result, Ok(n1))
-    let result =  single <| fun t -> t.TestSingle n1 |> t.Lte 0 "should <= 0"
+    let result =  single <| fun t -> t.TestOne n1 |> t.Lte 0 "should <= 0" |> t.End
     Assert.AreEqual (result, Error(["should <= 0"]))
 
   it "should Map/To work" <| fun () ->
     let n1 = 1
-    let result =  single <| fun t -> t.TestSingle n1 |> t.Map Ok |> t.IsOk "should be Ok"
+    let result =  single <| fun t -> t.TestOne n1 |> t.Map Ok |> t.IsOk "should be Ok" |> t.End
     Assert.AreEqual (result, Ok(n1))
     try
-        (single <| fun t -> t.TestSingle "abc" |> t.Map int) |> ignore
+        (single <| fun t -> t.TestOne "abc" |> t.Map int |> t.End) |> ignore
         raise (ShouldThrowException "Map should throw error")
     with
     | :? ShouldThrowException as exp -> raise exp
     | _ -> ()
 
     let msg = "should be int"
-    let result =  single <| fun t -> t.TestSingle "123" |> t.To int msg
+    let result =  single <| fun t -> t.TestOne "123" |> t.To int msg |> t.End
     Assert.AreEqual (result, Ok(123))
-    let result =  single <| fun t -> t.TestSingle "abc" |> t.To int msg
+    let result =  single <| fun t -> t.TestOne "abc" |> t.To int msg |> t.End
     Assert.AreEqual (result, Error([msg]))
 
   it "should MaxLen/MinLen work" <| fun () ->
@@ -139,57 +139,57 @@ describe "test rules" <| fun () ->
     let minLen2 = "should min len 2"
     let minLen4 = "should min len 4"
     let minLen6 = "should min len 6"
-    let result =  single <| fun t -> t.TestSingle str |> t.MinLen 2 minLen2
+    let result =  single <| fun t -> t.TestOne str |> t.MinLen 2 minLen2 |> t.End
     Assert.AreEqual (result, Ok(str))
-    let result =  single <| fun t -> t.TestSingle str |> t.MinLen 4 minLen4
+    let result =  single <| fun t -> t.TestOne str |> t.MinLen 4 minLen4 |> t.End
     Assert.AreEqual (result, Ok(str))
-    let result =  single <| fun t -> t.TestSingle str |> t.MinLen 6 "should min len {len}"
+    let result =  single <| fun t -> t.TestOne str |> t.MinLen 6 "should min len {len}" |> t.End
     Assert.AreEqual (result, Error([minLen6]))
 
     let maxLen2 = "should max len 2"
     let maxLen4 = "should max len 4"
     let maxLen6 = "should max len 6"
-    let result =  single <| fun t -> t.TestSingle str |> t.MaxLen 2 "should max len {len}"
+    let result =  single <| fun t -> t.TestOne str |> t.MaxLen 2 "should max len {len}" |> t.End
     Assert.AreEqual (result, Error([maxLen2]))
-    let result =  single <| fun t -> t.TestSingle str |> t.MaxLen 4 maxLen4
+    let result =  single <| fun t -> t.TestOne str |> t.MaxLen 4 maxLen4 |> t.End
     Assert.AreEqual (result, Ok(str))
-    let result =  single <| fun t -> t.TestSingle str |> t.MaxLen 6 maxLen6
+    let result =  single <| fun t -> t.TestOne str |> t.MaxLen 6 maxLen6 |> t.End
     Assert.AreEqual (result, Ok(str))
 
   it "should match work" <| fun () ->
     let valid = "123"
     let invalid = "abc"
     let msg = "should match number"
-    let result =  single <| fun t -> t.TestSingle valid |> t.Match (Regex ("^\d+$", RegexOptions.ECMAScript)) msg
+    let result =  single <| fun t -> t.TestOne valid |> t.Match (Regex ("^\d+$", RegexOptions.ECMAScript)) msg |> t.End
     Assert.AreEqual (result, Ok(valid))
-    let result =  single <| fun t -> t.TestSingle invalid |> t.Match (Regex ("^\d+$", RegexOptions.ECMAScript)) msg
+    let result =  single <| fun t -> t.TestOne invalid |> t.Match (Regex ("^\d+$", RegexOptions.ECMAScript)) msg |> t.End
     Assert.AreEqual (result, Error([msg]))
 
   it "should url work" <| fun () ->
     let valid = "https://www.google.com"
     let invalid = "abc"
     let msg = "should be valid url"
-    let result =  single <| fun t -> t.TestSingle valid |> t.IsUrl msg
+    let result =  single <| fun t -> t.TestOne valid |> t.IsUrl msg |> t.End
     Assert.AreEqual (result, Ok(valid))
-    let result =  single <| fun t -> t.TestSingle invalid |> t.IsUrl msg
+    let result =  single <| fun t -> t.TestOne invalid |> t.IsUrl msg |> t.End
     Assert.AreEqual (result, Error([msg]))
 
   it "should mail work" <| fun () ->
     let valid = "aa@bb.com"
     let invalid = "ab@bb"
     let msg = "should be valid mail"
-    let result =  single <| fun t -> t.TestSingle valid |> t.IsMail msg
+    let result =  single <| fun t -> t.TestOne valid |> t.IsMail msg |> t.End
     Assert.AreEqual (result, Ok(valid))
-    let result =  single <| fun t -> t.TestSingle invalid |> t.IsMail msg
+    let result =  single <| fun t -> t.TestOne invalid |> t.IsMail msg |> t.End
     Assert.AreEqual (result, Error([msg]))
 
   it "should IsDegist work" <| fun () ->
     let valid = "12345"
     let invalid = "abcd"
     let msg = "should be degist"
-    let result =  single <| fun t -> t.TestSingle valid |> t.IsDegist msg
+    let result =  single <| fun t -> t.TestOne valid |> t.IsDegist msg |> t.End
     Assert.AreEqual (result, Ok(valid))
-    let result =  single <| fun t -> t.TestSingle invalid |> t.IsDegist msg
+    let result =  single <| fun t -> t.TestOne invalid |> t.IsDegist msg |> t.End
     Assert.AreEqual (result, Error([msg]))
 
 
@@ -217,10 +217,10 @@ describe "test all" <| fun () ->
     Assert.AreEqual (result, Ok(valid), "0")
 
     let result =  all <| fun t ->
-        { name = t.Test People.Name "abc"
-                    |> t.MaxLen 20 "maxlen 20"
-                    |> t.MinLen 4 "minlen 4"
-                    |> t.End;
+        let name = t.TestOnlySome People.Name (Some "abc")
+                    [ t.MaxLen 20 "maxlen 20"
+                      t.MinLen 4 "minlen 4" ]
+        { name = name.Value;
           age = t.Test People.Age 201
                     |> t.Gt 0 "min 0"
                     |> t.Lt 200 "min 200"

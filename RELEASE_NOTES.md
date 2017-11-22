@@ -1,3 +1,6 @@
+#### 0.2.0
+* Add TestOneOnlySome/TestOneOnlyOk/TestOneOnlySomeAsync/TestOneOnlyOkAsync/TestOnlySome/TestOnlyOk/TestOnlySomeAsync/TestOnlyOkAsync and Remove SkipNone/SkipError
+
 #### 0.1.3
 * Fix SkipNone/SkipError
 * Add DefaultsOfError/DefaultsOfNone

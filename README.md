@@ -99,20 +99,24 @@ async {
 // result is Ok(transformed input value) or Error(error list)
 // test single value don't need call `t.End`, because it will return as result.
 let result: Result<string, string list> = single <| fun t ->
-    t.TestSingle "Some Input" |> t.MinLen 10 "minlen is 10"
+    t.TestOne "Some Input" |> t.MinLen 10 "minlen is 10"
 
 ```
 
-### option/Result support
+### Option/Result support
 
-This library comes with option/Result support in mind, you can unwrap it by validate rules like IsSome/IsOK, or skip following validation it if it's None/Error (in this case it will return `Ok(Unchecked.defaultof<'T>)`, which is always null in Fable, but can be 0 if 'T is int in F#).
+This library comes with Option/Result support in mind, you can unwrap it by validate rules like IsSome/IsOK, or skip following validation it if it's None/Error.
 
 ```F#
 let result: Result<string, string list> = single <| fun t ->
-    t.TestSingle (Some 1) |> t.IsSome  "should be some" |> t.Gt 0 "should greater then 0"
+    t.TestOne (Some 1) |> t.IsSome  "should be some" |> t.Gt 0 "should greater then 0" |> t.End
 
+// In this case you don't need to call t.End and rules are a list of rule,
+// it will return None if it's None and don't cause any error.
+// there are TestOneOnlySome/TestOneOnlyOk/TestOneOnlySomeAsync/TestOneOnlyOkAsync for single field test
+// and TestOnlySome/TestOnlyOk/TestOnlySomeAsync/TestOnlyOkAsync for multi fields test
 let result: Result<string, string list> = single <| fun t ->
-    t.TestSingle None |> t.skipNone 1 |> t.Gt 0 "should greater then 0"
+    t.TestOneOnlySome None [ t.Gt 0 "should greater then 0" ]
 ```
 
 ### Map/To
@@ -124,10 +128,10 @@ It's very easy to transform the input value to another type:
 
 ```F#
 let result: Result<int option, string list> =
-    single (fun t -> t.TestSingle 1 |> t.Map Some)
+    single (fun t -> t.TestOne 1 |> t.Map Some |> t.End)
 
 let result: Result<int, string list> =
-    single (fun t -> t.TestSingle "123" |> t.To int "cann't parse to int")
+    single (fun t -> t.TestOne "123" |> t.To int "cann't parse to int" |> t.End)
 ```
 
 For more you can see [API Reference](https://zaaack.github.io/fable-validation).

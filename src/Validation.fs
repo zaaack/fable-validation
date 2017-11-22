@@ -3,7 +3,10 @@ module Fable.Validation.Core
 open System
 open System.Text.RegularExpressions
 
-let private singleKey = "s"
+
+let [<Literal>] private singleKey = "s"
+
+let inline private execRule acc f = f acc
 
 module ValidateRegexes =
     let mail = Regex (@"^(([^<>()\[\]\\.,;:\s@""]+(\.[^<>()\[\]\\.,;:\s@""]+)*)|("".+""))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$", RegexOptions.Compiled ||| RegexOptions.ECMAScript)
@@ -46,11 +49,14 @@ and Validator<'E>(all) =
             { key=name; original=value
               result=Valid value; validator=x }
 
-    member x.TestAsync name (value: 'T) =
+    member inline x.TestAsync name (value: 'T) =
         async { return x.Test name value }
 
-    member x.TestSingle (value: 'T0) =
-        x.Test singleKey value
+    member inline x.TestOne (value: 'T) = x.Test singleKey value
+    member inline x.TestOneOnlySome (value: 'T option) = x.TestOnlySome singleKey value
+    member inline x.TestOneOnlySomeAsync (value: 'T option) = x.TestOnlySomeAsync singleKey value
+    member inline x.TestOneOnlyOk (value: Result<'T, 'TError>) = x.TestOnlyOk singleKey value
+    member inline x.TestOneOnlyOkAsync (value: Result<'T, 'TError>) = x.TestOnlyOkAsync singleKey value
 
     member __.End<'T, 'T0> (input: FieldInfo<'T, 'T0, 'E>) =
         match input.result with
@@ -61,6 +67,47 @@ and Validator<'E>(all) =
         async {
             let! input = input
             return x.End input
+        }
+    member inline private x.ExecRules rules info map =
+        rules |> List.fold execRule info |> map
+    member inline private x.ExecRulesAsync rules info map =
+        async {
+            let! info = rules |> List.fold execRule info
+            return map info
+        }
+
+    /// Test rules only if value is Some,
+    /// it won't collect error if value is None
+    member t.TestOnlySome name (value: 'T option) (rules: (FieldInfo<'T, 'T, 'E> -> FieldInfo<'T,'T, 'E>) list) =
+        match value with
+        | Some value -> t.ExecRules rules (t.Test name value) (t.End >> Some)
+        | None -> None
+
+    /// Test rules only if value is Ok,
+    /// it won't collect error if value is Error
+    member t.TestOnlyOk name value (rules: (FieldInfo<'T, 'T, 'E> -> FieldInfo<'T, 'T, 'E>) list) =
+        match value with
+        | Ok value -> t.ExecRules rules (t.Test name value) (t.End >> Ok)
+        | Error err -> Error err
+
+    /// Test rules only if value is Some,
+    /// it won't collect error if value is None
+    member t.TestOnlySomeAsync name (value: 'T option) (rules: (Async<FieldInfo<'T, 'T, 'E>> -> Async<FieldInfo<'T,'T, 'E>>) list) =
+        async {
+            match value with
+            | Some value ->
+                return! t.ExecRulesAsync rules (t.TestAsync name value) (t.End >> Some)
+            | None -> return None
+        }
+
+    /// Test rules only if value is Ok,
+    /// it won't collect error if value is Error
+    member t.TestOnlyOkAsync name (value: Result<'T, 'TError>) (rules: (Async<FieldInfo<'T, 'T, 'E>> -> Async<FieldInfo<'T, 'T, 'E>>) list) =
+        async {
+            match value with
+            | Ok value ->
+                return! t.ExecRulesAsync rules (t.TestAsync name value) (t.End >> Ok)
+            | Error err -> return Error err
         }
 
     /// Validate with a custom tester, return ValidateResult DU to modify input value
@@ -111,15 +158,8 @@ and Validator<'E>(all) =
     /// Test an option value is some and unwrap it
     /// it will collect error
     member x.IsSome error =
-        x.IsValid<'T, 'T0 option> (fun t -> t.IsSome) error >> x.SkipNone
-
-    /// Skip following rules if value is None,
-    /// it won't collect error
-    member __.SkipNone (input: FieldInfo<'T, 'T0 option, 'E>) =
-        match input.result with
-        | Valid (Some value) ->
-            input.Replace <| Valid value
-        | _ -> input.Replace <| Invalid
+        let tester i = match i with Some v -> Valid v | _ ->Invalid
+        x.IsValidOpt<'T, 'T0 option, 'T0> tester error
 
     /// Defaults of None value, it won't collect error
     member __.DefaultOfNone defaults (input: FieldInfo<'T, 'T0 option, 'E>) =
@@ -131,16 +171,8 @@ and Validator<'E>(all) =
     /// Test a Result value is Ok and unwrap it
     /// it will collect error
     member x.IsOk<'T, 'T0, 'TError> error =
-        let isOk = fun t -> match t with Ok _ -> true | Error _ -> false
-        x.IsValid<'T, Result<'T0, 'TError>> isOk error >> x.SkipError
-
-    /// Skip following rules if value is None,
-    /// it won't collect error
-    member __.SkipError (input: FieldInfo<'T, Result<'T0, 'TError>, 'E>)  =
-        match input.result with
-        | Valid (Ok value) ->
-            input.Replace <| Valid value
-        | _ -> input.Replace <| Invalid
+        let tester i = match i with Ok v -> Valid v | _ ->Invalid
+        x.IsValidOpt<'T, Result<'T0, 'TError>, 'T0> tester error
 
     /// Defaults of Error value, it won't collect error
     member __.DefaultOfError defaults (input: FieldInfo<'T, Result<'T0, 'TError>, 'E>)  =
@@ -162,7 +194,7 @@ and Validator<'E>(all) =
                 try fn t |> Valid
                 with
                 | exn ->
-                    printfn "Validation Map error: fn: %A value: %A exn: %s %s" fn t exn.Message exn.StackTrace
+                    printfn "Validation Map error: \nfn: %A \nvalue: %A \nException: %s %s" fn t exn.Message exn.StackTrace
                     Invalid
         )
 
@@ -285,18 +317,18 @@ let inline allAsync (tester: Validator<'E> -> Async<'T>) = validateAsync true te
 let inline fastAsync (tester: Validator<'E> -> Async<'T>) = validateAsync false tester
 
 /// Validate single value
-let single (tester: Validator<'E> -> FieldInfo<'T, 'T0, 'E>)  =
+let single (tester: Validator<'E> -> 'T)  =
     let t = Validator(true)
-    let ret = tester t |> t.End
+    let ret = tester t
     if t.HasError
     then Error t.Errors.[singleKey]
     else Ok ret
 
 /// Validate single value asynchronize
-let singleAsync (tester: Validator<'E> -> Async<FieldInfo<'T, 'T0, 'E>>) =
+let singleAsync (tester: Validator<'E> -> Async<'T>) =
     async {
         let t = Validator(true)
-        let! ret = tester t |> t.EndAsync
+        let! ret = tester t
         if t.HasError
         then return Error t.Errors.[singleKey]
         else return Ok ret
