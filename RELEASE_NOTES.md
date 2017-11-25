@@ -1,3 +1,6 @@
+#### 0.2.1
+* Fix fable warning
+
 #### 0.2.0
 * Add TestOneOnlySome/TestOneOnlyOk/TestOneOnlySomeAsync/TestOneOnlyOkAsync/TestOnlySome/TestOnlyOk/TestOnlySomeAsync/TestOnlyOkAsync and Remove SkipNone/SkipError
 
