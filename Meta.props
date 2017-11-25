@@ -6,6 +6,6 @@
 <RepositoryUrl>https://github.com/zaaack/fable-validation.git</RepositoryUrl>
 <PackageTags>fable;elm;elmish;validation;fsharp</PackageTags>
 <Authors>Zack Young</Authors>
-<Version>0.2.0</Version>
+<Version>0.2.1</Version>
 </PropertyGroup>
 </Project>
